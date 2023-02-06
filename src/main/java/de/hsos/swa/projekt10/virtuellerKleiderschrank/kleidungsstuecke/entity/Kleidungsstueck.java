@@ -10,7 +10,7 @@ import javax.persistence.Id;
 
 @Entity
 @Vetoed
-public class Kleidungstueck {
+public class Kleidungsstueck {
     @Id
     @GeneratedValue
     private long kleidungsId;
@@ -21,7 +21,7 @@ public class Kleidungstueck {
     private List<String> kategorien;
     private String benutzername;
 
-    public Kleidungstueck(String groesse, Farbe farbe, Typ typ, String name, List<String> kategorien,String benutzername){
+    public Kleidungsstueck(String groesse, Farbe farbe, Typ typ, String name, List<String> kategorien,String benutzername){
         this.groesse = groesse;
         this.farbe = farbe;
         this.typ = typ;
