@@ -40,10 +40,9 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, benutzername)
-            .stream().map(kleidungsstueck -> KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(kleidungsstueck)).toList();
+        KleidungsstueckOutputDTO kleidungsstueckDTO = KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, benutzername));
         
-        return Response.status(Response.Status.OK).entity(kleidungsstueckDTOs).build();
+        return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
     }
 
     @POST
