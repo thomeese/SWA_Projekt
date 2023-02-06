@@ -1,5 +1,7 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;

@@ -26,7 +26,7 @@ public class OutfitOutputDTO {
         public static OutfitOutputDTO toOutfitOutputDTO(Outfit outfit)
         {
             //TODO DTO eventuell hier nochmal Validieren? oder sicher vollständig, da schon in Ressource validiert wird und nur dort InputDTO erstellt wird.
-            return new OutfitOutputDTO(outfit.outfitId, outfit.name, outfit.kategorien, outfit.istGeteilt);
+            return new OutfitOutputDTO(outfit.getOutfitId(), outfit.getName(), outfit.getKategorien(), outfit.isGeteilt());
 
         }
     }
