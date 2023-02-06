@@ -35,8 +35,13 @@ public class KleidungsstueckRepository implements KleidungstueckKatalog{
 
     @Override
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
-        // TODO Auto-generated method stub
-        return false;
+        Kleidungstueck kleidungstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
+        if(kleidungstueck == null){
+            return false;
+        }
+        this.entityManager.remove(kleidungstueck);
+        return true;
+        
     }
 
     @Override
