@@ -16,16 +16,16 @@ public class Outfit {
     private long outfitId;
     private String name;
     private List<String> kategorien;
-    private boolean istGeteilt;
-    private List<Long> kleidungstuecke;
+    private boolean geteilt;
+    private List<Long> kleidungsstuecke;
     private String benutzername;
 
-    public Outfit(String name, List<String> kategorien, boolean istGeteilt, String benutzername){
+    public Outfit(String name, List<String> kategorien, boolean geteilt, String benutzername){
         this.name = name;
         this.kategorien = kategorien;
-        this.istGeteilt = istGeteilt;
+        this.geteilt = geteilt;
         this.benutzername = benutzername;
-        this.kleidungstuecke = new ArrayList<Long>();
+        this.kleidungsstuecke = new ArrayList<Long>();
     }
 
     public long getOutfitId() {
@@ -46,17 +46,17 @@ public class Outfit {
     public void setKategorien(List<String> kategorien) {
         this.kategorien = kategorien;
     }
-    public boolean isIstGeteilt() {
-        return istGeteilt;
+    public boolean isGeteilt() {
+        return geteilt;
     }
-    public void setIstGeteilt(boolean istGeteilt) {
-        this.istGeteilt = istGeteilt;
+    public void setGeteilt(boolean geteilt) {
+        this.geteilt = geteilt;
     }
-    public List<Long> getKleidungstuecke() {
-        return kleidungstuecke;
+    public List<Long> getKleidungsstuecke() {
+        return kleidungsstuecke;
     }
-    public void setKleidungstuecke(List<Long> kleidungstuecke) {
-        this.kleidungstuecke = kleidungstuecke;
+    public void setKleidungsstuecke(List<Long> kleidungsstuecke) {
+        this.kleidungsstuecke = kleidungsstuecke;
     }
     public String getBenutzername() {
         return benutzername;
