@@ -2,8 +2,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.gateway.repositor
 
 import java.util.List;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 
 public class OutfitRepository implements OutfitKatalog{
@@ -51,13 +51,13 @@ public class OutfitRepository implements OutfitKatalog{
     }
 
     @Override
-    public Outfit gebeOutVomBenutzerMitId(long outfitId, String benutzername) {
+    public Outfit gebeOutfitVomBenutzerMitId(long outfitId, String benutzername) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public List<Outfit> gebeAlleVomBenutzerEinerKategorie(String kategorie, String benutzername) {
+    public List<Outfit> gebeAlleOutfitsVomBenutzerEinerKategorie(String kategorie, String benutzername) {
         // TODO Auto-generated method stub
         return null;
     }

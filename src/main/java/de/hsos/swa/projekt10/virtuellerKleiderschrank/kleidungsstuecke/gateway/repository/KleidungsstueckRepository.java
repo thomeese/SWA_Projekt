@@ -1,7 +1,6 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.gateway.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -9,8 +8,8 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
@@ -33,7 +32,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Override
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
-        List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleingsstueckVomBenutzer(benutzername);
+        List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
         for(int index = 0; index < zuLoeschen.size(); index++){
             this.entityManager.remove(zuLoeschen.get(index)); // oder darf man da die ganze Liste uebergeben?
         }
@@ -52,7 +51,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleingsstueckVomBenutzerEinesTyp(Typ typ, String benutzername) {
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinesTyp(Typ typ, String benutzername) {
         TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         
         return query.getResultList().stream().filter(kleidung -> {
@@ -62,7 +61,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleingsstueckVomBenutzerMitNamen(String name, String benutzername) {
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerMitNamen(String name, String benutzername) {
         TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         
         return query.getResultList().stream().filter(kleidung -> {
@@ -72,7 +71,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleingsstueckVomBenutzerEinerFarbe(Farbe farbe, String benutzername) {
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerFarbe(Farbe farbe, String benutzername) {
         TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         
         return query.getResultList().stream().filter(kleidung -> {
@@ -82,11 +81,21 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleingsstueckVomBenutzerEinerKategorie(String kategorie, String benutzername) {
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerKategorie(String kategorie, String benutzername) {
         TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         
         return query.getResultList().stream().filter(kleidung -> {
             return kleidung.getBenutzername().equals(benutzername) && kleidung.besitztKleidungsstueckKategorie(kategorie);
+        }).toList();
+    }
+
+    @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(String benutzername) {
+        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
+        
+        return query.getResultList().stream().filter(kleidung -> {
+            return kleidung.getBenutzername().equals(benutzername);
         }).toList();
     }
 
@@ -97,20 +106,10 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     }
 
     @Override
-    public boolean bearbeiteKleidungstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto,
+    public boolean bearbeiteKleidungsstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto,
             String benutzername) {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleingsstueckVomBenutzer(String benutzername) {
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
-        
-        return query.getResultList().stream().filter(kleidung -> {
-            return kleidung.getBenutzername().equals(benutzername);
-        }).toList();
     }
 
     
