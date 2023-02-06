@@ -16,7 +16,7 @@ public class KleidungsstueckeVerwaltung {
     private KleidungsstueckKatalog kKatalog;
 
     public List<Kleidungsstueck> holeAlleKleidungsstuecke(String benutzername) {
-        return this.kKatalog.gebeAlleKleingsstueckeVomBenutzer(benutzername);
+        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
     }
 
     public Kleidungsstueck holeKleidungsstueckById(long kleidungsId, String benutzername) {
@@ -24,6 +24,6 @@ public class KleidungsstueckeVerwaltung {
     }
 
     public boolean erstelleKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO, String benutzername) {
-        return this.kKatalog.erstelleKleindungsstueckFuerBenutzer(kleidungsDTO, benutzername);
+        return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsDTO, benutzername);
     }
 }

@@ -9,7 +9,7 @@ public class KleidungsstueckOutputDTO {
     long kleidungsId;
     String groesse;
     Farbe farbe;
-    Type typ;
+    Typ typ;
     String name;
     List<String> kategorien;
 
@@ -17,11 +17,11 @@ public class KleidungsstueckOutputDTO {
     }
 
 
-    public KleidungsstueckOutputDTO(long kleidungsId, String groesse, Farbe farbe, Typ type, String name, List<String> kategorien) {
+    public KleidungsstueckOutputDTO(long kleidungsId, String groesse, Farbe farbe, Typ typ, String name, List<String> kategorien) {
         this.kleidungsId = kleidungsId;
         this.groesse = groesse;
         this.farbe = farbe;
-        this.type = type;
+        this.typ = typ;
         this.name = name;
         this.kategorien = kategorien;
     }
@@ -31,8 +31,7 @@ public class KleidungsstueckOutputDTO {
         public static KleidungsstueckOutputDTO toKleidungsstueckOutputDTO (Kleidungsstueck kleidungsstueck)
         {
             //TODO DTO eventuell hier nochmal Validieren? oder sicher vollständig, da schon in Ressource validiert wird und nur dort InputDTO erstellt wird.
-            return new KleidungsstueckOutputDTO(kleidungsstueck.kleidungsId, kleidungsstueck.groesse, kleidungsstueck.farbe, kleidungsstueck.type, kleidungsstueck.name, kleidungsstueck.kategorien);
-
+            return new KleidungsstueckOutputDTO(kleidungsstueck.getKleidungsId(), kleidungsstueck.getGroesse(), kleidungsstueck.getFarbe(), kleidungsstueck.getTyp(), kleidungsstueck.getName(), kleidungsstueck.getKategorien());
         }
     }  
 }

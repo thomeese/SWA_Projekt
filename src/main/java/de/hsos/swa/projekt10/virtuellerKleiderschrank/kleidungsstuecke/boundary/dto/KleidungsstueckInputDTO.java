@@ -2,9 +2,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Type;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 
 public class KleidungsstueckInputDTO {
