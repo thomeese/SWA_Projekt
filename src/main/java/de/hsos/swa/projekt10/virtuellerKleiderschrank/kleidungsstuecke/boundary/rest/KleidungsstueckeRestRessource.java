@@ -3,6 +3,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import io.quarkus.security.identity.SecurityIdentity;
+
 import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -23,19 +25,19 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class KleidungsstueckeRestRessource {
- 
+
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
 
-    //TODO Authentication ergaenzen. Nutzername wird erstmal gemockt
-    private String benutzername = "Gustav";
+    @Inject
+    SecurityIdentity sc;
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response getAlleKleidungsstuecke() {
         
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = this.kVerwaltung.holeAlleKleidungsstuecke(benutzername)
+        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = this.kVerwaltung.holeAlleKleidungsstuecke(sc.getPrincipal().getName())
             .stream().map(kleidungsstueck -> KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(kleidungsstueck)).toList();
         
         
@@ -47,7 +49,7 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        KleidungsstueckOutputDTO kleidungsstueckDTO = KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, benutzername));
+        KleidungsstueckOutputDTO kleidungsstueckDTO = KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
         
         return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
     }
@@ -56,7 +58,7 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response erstelleNeuesKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO) {
         
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, benutzername);
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, sc.getPrincipal().getName());
         return Response.status(Response.Status.CREATED).entity(kleidungsId).build();
     }
 
@@ -65,7 +67,7 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response loescheKleidungsstueck(@PathParam("id") long kleidungsId) {
 
-        if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, benutzername)) {
+        if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -75,7 +77,7 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response loescheAlleKleidungsstuecke() {
 
-        if(this.kVerwaltung.loescheAlleKleidungsstuecke(benutzername)) {
+        if(this.kVerwaltung.loescheAlleKleidungsstuecke(sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -86,7 +88,7 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
         
-        if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, benutzername)) {
+        if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

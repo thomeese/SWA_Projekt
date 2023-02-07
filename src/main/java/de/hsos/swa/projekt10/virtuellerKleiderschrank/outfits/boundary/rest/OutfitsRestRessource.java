@@ -17,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
+import io.quarkus.security.identity.SecurityIdentity;
 
 @Path("/api/outfits")
 @Tag(name = "Outfits")
@@ -25,15 +26,15 @@ public class OutfitsRestRessource {
     @Inject
     private OutfitsVerwaltung outfitsVerwaltung;
 
-    //TODO Authentication ergaenzen. Nutzername wird erstmal gemockt
-    String benutzername = "Gustav";
+    @Inject
+    SecurityIdentity sc;
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response getAlleOutfits() {
 
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
-        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(benutzername)
+        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(sc.getPrincipal().getName())
             .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
         
         
@@ -45,7 +46,7 @@ public class OutfitsRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response getOutfit(@PathParam("id") long outfitId) {
 
-        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, benutzername));
+        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, sc.getPrincipal().getName()));
 
         return Response.status(Response.Status.OK).entity(outfitDTO).build();
     }
@@ -54,7 +55,7 @@ public class OutfitsRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
      
-        long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, benutzername);
+        long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, sc.getPrincipal().getName());
         return Response.status(Response.Status.CREATED).entity(outfitId).build();
     }
 
@@ -62,7 +63,7 @@ public class OutfitsRestRessource {
     @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response loescheOutfit(@PathParam("id") long outfitId) {
-        if(this.outfitsVerwaltung.loescheOutfit(outfitId, benutzername)) {
+        if(this.outfitsVerwaltung.loescheOutfit(outfitId, sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -72,7 +73,7 @@ public class OutfitsRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response loescheAlleOutfits() {
 
-        if(this.outfitsVerwaltung.loescheAlleOutfits(benutzername)) {
+        if(this.outfitsVerwaltung.loescheAlleOutfits(sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -83,7 +84,7 @@ public class OutfitsRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response bearbeiteOutfit(@PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
         
-        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, benutzername)) {
+        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
