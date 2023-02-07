@@ -2,6 +2,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest;
 
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
@@ -31,10 +32,11 @@ public class OutfitsRestRessource {
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response getAlleOutfits() {
 
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
-        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(sc.getPrincipal().getName())
+        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(this.sc.getPrincipal().getName())
             .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
         
         
@@ -44,26 +46,29 @@ public class OutfitsRestRessource {
     @GET
     @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response getOutfit(@PathParam("id") long outfitId) {
 
-        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, sc.getPrincipal().getName()));
+        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, this.sc.getPrincipal().getName()));
 
         return Response.status(Response.Status.OK).entity(outfitDTO).build();
     }
 
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
      
-        long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, sc.getPrincipal().getName());
+        long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
         return Response.status(Response.Status.CREATED).entity(outfitId).build();
     }
 
     @DELETE
     @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response loescheOutfit(@PathParam("id") long outfitId) {
-        if(this.outfitsVerwaltung.loescheOutfit(outfitId, sc.getPrincipal().getName())) {
+        if(this.outfitsVerwaltung.loescheOutfit(outfitId, this.sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -71,9 +76,10 @@ public class OutfitsRestRessource {
 
     @DELETE
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response loescheAlleOutfits() {
 
-        if(this.outfitsVerwaltung.loescheAlleOutfits(sc.getPrincipal().getName())) {
+        if(this.outfitsVerwaltung.loescheAlleOutfits(this.sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -82,9 +88,10 @@ public class OutfitsRestRessource {
     @PATCH
     @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
     public Response bearbeiteOutfit(@PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
         
-        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, sc.getPrincipal().getName())) {
+        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
