@@ -65,5 +65,16 @@ public class Outfit {
         this.benutzername = benutzername;
     }
 
+    public boolean besitztOutfitKategorie(String kategorie){
+        if(this.kategorien.size() == 0){
+            return false;
+        }
+        for(int index = 0; index < this.kategorien.size(); index++){
+            if(this.kategorien.get(index).equals(kategorie)){
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

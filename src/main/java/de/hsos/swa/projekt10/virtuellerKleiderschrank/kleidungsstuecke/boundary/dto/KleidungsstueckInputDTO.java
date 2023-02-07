@@ -6,11 +6,11 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 
 public class KleidungsstueckInputDTO {
-    String groesse;
-    Farbe farbe;
-    Typ type;
-    String name;
-    List<String> kategorien;
+    public String groesse;
+    public Farbe farbe;
+    public Typ type;
+    public String name;
+    public List<String> kategorien;
     
     public KleidungsstueckInputDTO() {
     }

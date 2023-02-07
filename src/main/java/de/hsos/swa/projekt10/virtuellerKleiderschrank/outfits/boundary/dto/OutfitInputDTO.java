@@ -3,8 +3,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto;
 import java.util.List;
 
 public class OutfitInputDTO {
-    String name;
-    List<String> kategorien;
+    public String name;
+    public List<String> kategorien;
 
     public OutfitInputDTO(){
     }

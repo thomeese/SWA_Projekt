@@ -6,7 +6,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 
 public interface OutfitKatalog {
     public long erstelleOutfitFuerEinenBenutzer(OutfitInputDTO dto, String benutzername);
-    public boolean bearbeiteOutfitEinesBenutzers(OutfitInputDTO dto, String benutzername);
+    public boolean bearbeiteOutfitEinesBenutzers(OutfitInputDTO dto, long outfitId, String benutzername);
     public boolean loescheOutfitEinesBenutzers(long outfitId, String benutzername);
     public boolean loescheAlleOutfitsEinesBenutzers(String benutzername);
     public Outfit fuegeKleidungsstueckZuOutfitHinzu(long kleidungsId, long outfitId, String benutzername);

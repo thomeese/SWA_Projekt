@@ -20,21 +20,22 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     private EntityManager entityManager;
 
     @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
         Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
         if(kleidungsstueck == null){
             return false;
         }
         this.entityManager.remove(kleidungsstueck);
-        return true;
-        
+        return true;    
     }
 
     @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
         List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
         for(int index = 0; index < zuLoeschen.size(); index++){
-            this.entityManager.remove(zuLoeschen.get(index)); // oder darf man da die ganze Liste uebergeben?
+            this.entityManager.remove(zuLoeschen.get(index));
         }
         return true;
     }
@@ -100,16 +101,34 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     }
 
     @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername) {
-        // TODO Auto-generated method stub
-        return 0;
+        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.type, benutzername, dto.kategorien, benutzername);
+        this.entityManager.persist(kleidung);
+        return kleidung.getKleidungsId();
     }
 
     @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
     public boolean bearbeiteKleidungsstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto,
             String benutzername) {
-        // TODO Auto-generated method stub
-        return false;
+        Kleidungsstueck kleidung = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
+        if(kleidung == null){
+            return false;
+        }
+        if(dto.groesse != null){
+            kleidung.setGroesse(dto.groesse);
+        }
+        if(dto.farbe != null){
+            kleidung.setFarbe(dto.farbe);
+        }
+        if(dto.type != null){
+            kleidung.setTyp(dto.type);
+        }
+        kleidung.setBenutzername(benutzername);
+        kleidung.setKategorien(dto.kategorien);
+
+        return true;
     }
 
     
