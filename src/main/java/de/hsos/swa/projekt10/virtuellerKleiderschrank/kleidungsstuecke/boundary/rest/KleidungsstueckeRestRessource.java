@@ -6,15 +6,22 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.K
 import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
 
 @Path("/api/clothes")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class KleidungsstueckeRestRessource {
  
     @Inject
@@ -49,8 +56,38 @@ public class KleidungsstueckeRestRessource {
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     public Response erstelleNeuesKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO) {
         
-        if(this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, benutzername)) {
-            return Response.status(Response.Status.CREATED).build();
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, benutzername);
+        return Response.status(Response.Status.CREATED).entity(kleidungsId).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    public Response loescheKleidungsstueck(@PathParam("id") long kleidungsId) {
+
+        if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, benutzername)) {
+            return Response.status(Response.Status.OK).build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @DELETE
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    public Response loescheAlleKleidungsstuecke() {
+
+        if(this.kVerwaltung.loescheAlleKleidungsstuecke(benutzername)) {
+            return Response.status(Response.Status.OK).build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @PATCH
+    @Path("{id}")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
+        
+        if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, benutzername)) {
+            return Response.status(Response.Status.OK).build();
         }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }

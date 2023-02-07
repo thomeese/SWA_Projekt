@@ -6,10 +6,10 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 
 
 public class OutfitOutputDTO {
-    long outfitId;
-    String name;
-    List<String> kategorien;
-    boolean istGeteilt;
+    public long outfitId;
+    public String name;
+    public List<String> kategorien;
+    public boolean istGeteilt;
 
     public OutfitOutputDTO() {
     }

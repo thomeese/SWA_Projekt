@@ -23,7 +23,19 @@ public class KleidungsstueckeVerwaltung {
         return this.kKatalog.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
     }
 
-    public boolean erstelleKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO, String benutzername) {
+    public long erstelleKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO, String benutzername) {
         return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsDTO, benutzername);
+    }
+
+    public boolean loescheKleidungsstueck(long kleidungsId, String benutzer) {
+        return this.kKatalog.loescheKleidungsstueckEinesBenutzers(kleidungsId, benutzer);
+    }
+
+    public boolean loescheAlleKleidungsstuecke(String benutzer) {
+        return this.kKatalog.loescheAlleKleidungsstueckeEinesBenutzers(benutzer);
+    }
+
+    public boolean bearbeiteKleidungsstueck(long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO, String benutzername) {
+        return this.kKatalog.bearbeiteKleidungsstueckEinesBenutzers(kleidungsId, kleidungsstueckInputDTO, benutzername);
     }
 }

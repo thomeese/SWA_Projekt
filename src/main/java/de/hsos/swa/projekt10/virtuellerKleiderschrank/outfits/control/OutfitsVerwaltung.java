@@ -8,7 +8,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 
-public class OutiftsVerwaltung {
+public class OutfitsVerwaltung {
     
     @Inject
     private OutfitKatalog outfitKatalog;
@@ -21,8 +21,20 @@ public class OutiftsVerwaltung {
         return this.outfitKatalog.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
     }
 
-    public boolean erstelleOutfit(OutfitInputDTO outfitInputDTO, String benutzername) {
+    public long erstelleOutfit(OutfitInputDTO outfitInputDTO, String benutzername) {
         return this.outfitKatalog.erstelleOutfitFuerEinenBenutzer(outfitInputDTO, benutzername);
+    }
+
+    public boolean loescheOutfit(long outfitId, String benutzername) {
+        return this.outfitKatalog.loescheOutfitEinesBenutzers(outfitId, benutzername);
+    }
+
+    public boolean loescheAlleOutfits(String benutzername) {
+        return this.outfitKatalog.loescheAlleOutfitsEinesBenutzers(benutzername);
+    }
+
+    public boolean bearbeiteOutfit(long outfitId, OutfitInputDTO outfitInputDTO, String benutzername) {
+        return this.outfitKatalog.bearbeiteOutfitEinesBenutzers(outfitInputDTO, outfitId, benutzername);
     }
 }
 
