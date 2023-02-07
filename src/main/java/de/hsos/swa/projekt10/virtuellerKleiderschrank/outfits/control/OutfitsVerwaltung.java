@@ -2,12 +2,14 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 
+@ApplicationScoped
 public class OutfitsVerwaltung {
     
     @Inject

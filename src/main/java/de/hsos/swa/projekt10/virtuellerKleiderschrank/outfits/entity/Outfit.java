@@ -4,21 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.inject.Vetoed;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+
 @Entity
 @Vetoed
+@Access(AccessType.FIELD)
 public class Outfit {
     @Id
     @GeneratedValue
     private long outfitId;
     private String name;
-    private List<String> kategorien;
+    @ElementCollection
+    private List<String> kategorien = new ArrayList<>();
     private boolean geteilt;
-    private List<Long> kleidungsstuecke;
+    @ElementCollection
+    private List<Long> kleidungsstuecke = new ArrayList<>();
     private String benutzername;
+
+    public Outfit() {
+    }
 
     public Outfit(String name, List<String> kategorien, boolean geteilt, String benutzername){
         this.name = name;

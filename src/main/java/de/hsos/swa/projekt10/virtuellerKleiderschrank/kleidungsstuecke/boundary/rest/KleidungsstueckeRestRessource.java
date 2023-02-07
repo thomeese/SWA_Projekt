@@ -25,10 +25,10 @@ import javax.ws.rs.core.Response;
 public class KleidungsstueckeRestRessource {
  
     @Inject
-    KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungsstueckeVerwaltung kVerwaltung;
 
     //TODO Authentication ergaenzen. Nutzername wird erstmal gemockt
-    String benutzername = "Gustav";
+    private String benutzername = "Gustav";
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)

@@ -12,14 +12,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 
 @Path("/api/outfits")
+@Tag(name = "Outfits")
 public class OutfitsRestRessource {
+    
     @Inject
-    OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitsVerwaltung outfitsVerwaltung;
 
     //TODO Authentication ergaenzen. Nutzername wird erstmal gemockt
     String benutzername = "Gustav";

@@ -3,6 +3,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity;
 import java.util.List;
 
 import javax.enterprise.inject.Vetoed;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,8 +19,12 @@ public class Kleidungsstueck {
     private Farbe farbe;
     private Typ typ;
     private String name;
+    @ElementCollection
     private List<String> kategorien;
     private String benutzername;
+
+    public Kleidungsstueck() {
+    }
 
     public Kleidungsstueck(String groesse, Farbe farbe, Typ typ, String name, List<String> kategorien,String benutzername){
         this.groesse = groesse;

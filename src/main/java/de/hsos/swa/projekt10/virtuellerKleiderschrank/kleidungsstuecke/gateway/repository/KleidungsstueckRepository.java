@@ -2,6 +2,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.gateway.
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -14,6 +16,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kl
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 
+@Dependent
 public class KleidungsstueckRepository implements KleidungsstueckKatalog{
 
     @Inject

@@ -2,6 +2,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.gateway.repositor
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -12,6 +14,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 
+@Dependent
 public class OutfitRepository implements OutfitKatalog{
 
     @Inject

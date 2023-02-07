@@ -1,4 +1,4 @@
-INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Blau','Pullover','Superdry Hoodie',NULL,'gustav');
-INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Schwarz','TShirt','Hollister',NULL,'gustav');
-INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Weiss','Sweatshirt','Tom Tailor',NULL,'gustav');
-INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'W42L42','Blau','Hose','Lee Jeans',NULL,'gustav');
+--INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Blau','Pullover','Superdry Hoodie',NULL,'gustav');
+--INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Schwarz','TShirt','Hollister',NULL,'gustav');
+--INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'L','Weiss','Sweatshirt','Tom Tailor',NULL,'gustav');
+--INSERT INTO Kleidungsstueck (kleidungsId,groesse,farbe,typ,name,kategorien,benutzername) VALUES(nextval('hibernate_sequence'), 'W42L42','Blau','Hose','Lee Jeans',NULL,'gustav');

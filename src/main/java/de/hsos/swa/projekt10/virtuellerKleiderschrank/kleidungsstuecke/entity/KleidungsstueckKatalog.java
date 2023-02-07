@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 
+
 public interface KleidungsstueckKatalog {
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername);
     public boolean bearbeiteKleidungsstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto, String benutzername);
