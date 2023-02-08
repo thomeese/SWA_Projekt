@@ -105,7 +105,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername) {
-        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.type, benutzername, dto.kategorien, benutzername);
+        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.type, dto.name, dto.kategorien, benutzername);
         this.entityManager.persist(kleidung);
         return kleidung.getKleidungsId();
     }
