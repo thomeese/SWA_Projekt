@@ -5,6 +5,8 @@ import java.util.List;
 import javax.enterprise.inject.Vetoed;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -16,7 +18,9 @@ public class Kleidungsstueck {
     @GeneratedValue
     private long kleidungsId;
     private String groesse;
+    @Enumerated(EnumType.STRING)
     private Farbe farbe;
+    @Enumerated(EnumType.STRING)
     private Typ typ;
     private String name;
     @ElementCollection
