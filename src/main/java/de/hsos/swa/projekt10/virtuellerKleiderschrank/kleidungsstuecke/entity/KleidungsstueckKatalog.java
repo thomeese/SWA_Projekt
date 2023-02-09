@@ -2,6 +2,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 
 
@@ -15,7 +17,7 @@ public interface KleidungsstueckKatalog {
      * @return long Id des erstellten Kleidungsstuecks
      * @author Thomas Meese
      */
-    public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername);
+    public long erstelleKleidungsstueckFuerBenutzer(@Valid KleidungsstueckInputDTO dto, String benutzername);
     /**
      * Veraendert die den Inhalt der Attribute eines Kleidungsstuecks.
      * Aenderungen werden anschliessend in der Datenbank gespeichert.

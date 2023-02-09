@@ -2,23 +2,30 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 
 public class KleidungsstueckInputDTO {
+
     public String groesse;
+    @NotNull(message="Farbe darf nicht leer sein")
     public Farbe farbe;
-    public Typ type;
+    @NotNull(message="Typ darf nicht leer sein")
+    public Typ typ;
+    @NotBlank(message="HaendlerName darf nicht leer sein")
     public String name;
     public List<String> kategorien;
     
     public KleidungsstueckInputDTO() {
     }
 
-    public KleidungsstueckInputDTO(String groesse, Farbe farbe, Typ type, String name, List<String> kategorien) {
+    public KleidungsstueckInputDTO(String groesse, Farbe farbe, Typ typ, String name, List<String> kategorien) {
         this.groesse = groesse;
         this.farbe = farbe;
-        this.type = type;
+        this.typ = typ;
         this.name = name;
         this.kategorien = kategorien;
     }
