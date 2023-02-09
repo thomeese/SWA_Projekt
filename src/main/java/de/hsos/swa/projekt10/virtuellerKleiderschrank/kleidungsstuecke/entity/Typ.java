@@ -1,5 +1,35 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity;
 
 public enum Typ {
-   Hose, Jacke , Pullover,TShirt,Sweatshirt,Bluse, Leggins, Blazer
+   Hose, 
+   Hemd,
+   Pullover,
+   TShirt,
+   Bluse, 
+   Anzugweste,
+   Anzughose,
+   Handschuhe,
+   Hausschuhe,
+   Schuhe,
+   Fliege,
+   Krawatte,
+   Guertel, 
+   Hosentraeger,
+   Jacke,
+   Leggins,
+   Pyjama,
+   Sakko,
+   Shorts,
+   Schal,
+   Weste,
+   Cap,
+   Cardigan,
+   Muetze,
+   Hut,
+   Top,
+   Bademode,
+   Jumpsuit,
+   Mantel,
+   Blazer,
+   Socken
 }
