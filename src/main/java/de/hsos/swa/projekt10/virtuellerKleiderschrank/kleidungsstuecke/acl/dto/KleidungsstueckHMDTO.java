@@ -14,7 +14,7 @@ public class KleidungsstueckHMDTO {
         public static KleidungsstueckInputDTO toKleidungsstueckInputDTO(KleidungsstueckHMDTO kleidungsstueckHMDTO, String groesse) {
             //TODO Mapper wegen Typ und Farbe benoetigt
             //return new KleidungsstueckInputDTO(kleidungsstueckHMDTO.product.color.text, kleidungsstueckHMDTO.product.productTypeName, kleidungsstueckHMDTO.product.name, new ArrayList<String>());
-            return new KleidungsstueckInputDTO(groesse, Farbe.Blau, Typ.Leggins, kleidungsstueckHMDTO.product.name, new ArrayList<String>());
+            return new KleidungsstueckInputDTO(groesse, Farbe.Blau, Typ.Hose, kleidungsstueckHMDTO.product.name, new ArrayList<String>());
         }
     }
 }
