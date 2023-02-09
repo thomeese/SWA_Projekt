@@ -16,5 +16,8 @@ public enum Farbe {
     Schwarz,
     Silber,
     Tuerkis,
-    Weiss
+    Weiss,
+    Hellgrau,
+    Dunkelgrau,
+    Antrazit,
 }

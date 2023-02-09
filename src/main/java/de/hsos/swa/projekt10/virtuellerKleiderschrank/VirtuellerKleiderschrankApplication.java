@@ -10,7 +10,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @OpenAPIDefinition(
     tags = {
             @Tag(name="Kleidungsstuecke", description="Generelle Operationen fuer Kleidungsstuecke."),
-            @Tag(name="Outfits", description="Generelle Operationen fuer Outfits,")
+            @Tag(name="Outfits", description="Generelle Operationen fuer Outfits.")
     },
     info = @Info(
         title="Virtueller Kleiderschrank API",

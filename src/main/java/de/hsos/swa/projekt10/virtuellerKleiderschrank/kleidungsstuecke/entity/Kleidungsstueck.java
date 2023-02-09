@@ -7,6 +7,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -23,7 +24,7 @@ public class Kleidungsstueck {
     @Enumerated(EnumType.STRING)
     private Typ typ;
     private String name;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> kategorien;
     private String benutzername;
 

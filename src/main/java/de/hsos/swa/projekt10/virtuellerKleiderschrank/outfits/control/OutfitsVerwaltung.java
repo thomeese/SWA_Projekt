@@ -38,6 +38,10 @@ public class OutfitsVerwaltung {
     public boolean bearbeiteOutfit(long outfitId, OutfitInputDTO outfitInputDTO, String benutzername) {
         return this.outfitKatalog.bearbeiteOutfitEinesBenutzers(outfitInputDTO, outfitId, benutzername);
     }
+
+    public List<Outfit> filterNachKategorie(String kategorie, String benutzername) {
+        return this.outfitKatalog.gebeAlleOutfitsVomBenutzerEinerKategorie(kategorie, benutzername);
+    }
 }
 
 
