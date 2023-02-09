@@ -17,5 +17,5 @@ public enum Farbe {
     Weiss,
     Hellgrau,
     Dunkelgrau,
-    Antrazit,
+    Antrazit
 }

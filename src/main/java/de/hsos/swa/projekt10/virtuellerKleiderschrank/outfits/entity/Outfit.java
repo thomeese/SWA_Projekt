@@ -8,6 +8,7 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -20,7 +21,7 @@ public class Outfit {
     @GeneratedValue
     private long outfitId;
     private String name;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> kategorien = new ArrayList<>();
     private boolean geteilt;
     @ElementCollection
