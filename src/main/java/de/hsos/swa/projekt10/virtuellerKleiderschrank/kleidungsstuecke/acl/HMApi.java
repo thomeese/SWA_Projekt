@@ -15,7 +15,7 @@ import io.quarkus.arc.log.LoggerName;
 public class HMApi implements KleidungsstueckAPIProvider{
 
     @LoggerName("hm-api")
-    Logger hmLog;
+    private static Logger hmLog = Logger.getLogger(KleidungsstueckAPIProvider.class);
 
     @Inject
     @RestClient

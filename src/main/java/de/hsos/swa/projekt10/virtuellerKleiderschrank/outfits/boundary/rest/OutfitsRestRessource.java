@@ -21,15 +21,20 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
+import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
 @Path("/api/outfits")
 @Tag(name = "Outfits")
 public class OutfitsRestRessource {
+
+    @LoggerName("out-ressource")
+    private static Logger outfitLog = Logger.getLogger(OutfitsRestRessource.class);
     
     @Inject
     private OutfitsVerwaltung outfitsVerwaltung;
@@ -56,11 +61,12 @@ public class OutfitsRestRessource {
         }
     )
     public Response getAlleOutfits() {
-
+        outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
         List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(this.sc.getPrincipal().getName())
             .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
-        
+        outfitLog.trace(System.currentTimeMillis() + ": getAlleOutfits-Methode - gibt alle Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
         
         return Response.status(Response.Status.OK).entity(outfitDTOs).build();
     }
@@ -86,9 +92,10 @@ public class OutfitsRestRessource {
         }
     )
     public Response getOutfit(@PathParam("id") long outfitId) {
-
+        outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
         OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, this.sc.getPrincipal().getName()));
-
+        outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt ein Outfit anhand der Id fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");
         return Response.status(Response.Status.OK).entity(outfitDTO).build();
     }
 
@@ -109,8 +116,10 @@ public class OutfitsRestRessource {
         }
     )
     public Response erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
-     
+        outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - gestartet");
         long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
+        outfitLog.trace(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - erstellt ein neues Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
         return Response.status(Response.Status.CREATED).entity(outfitId).build();
     }
 
@@ -132,9 +141,14 @@ public class OutfitsRestRessource {
         }
     )
     public Response loescheOutfit(@PathParam("id") long outfitId) {
+        outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - gestartet");
         if(this.outfitsVerwaltung.loescheOutfit(outfitId, this.sc.getPrincipal().getName())) {
+            outfitLog.trace(System.currentTimeMillis() + ": loescheOutfit-Methode - loescht ein Outfit fuer einen Benutzer durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet");
             return Response.status(Response.Status.OK).build();
         }
+        outfitLog.trace(System.currentTimeMillis() + ": loescheOutfit-Methode - loescht ein Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet ohne das ein Outfit geloescht wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
@@ -155,10 +169,14 @@ public class OutfitsRestRessource {
         }
     )
     public Response loescheAlleOutfits() {
-
+        outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - gestartet");
         if(this.outfitsVerwaltung.loescheAlleOutfits(this.sc.getPrincipal().getName())) {
+            outfitLog.trace(System.currentTimeMillis() + ": loescheAlleOutfitst-Methode - loescht alle Outfits fuer einen Benutzer durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet");
             return Response.status(Response.Status.OK).build();
         }
+        outfitLog.trace(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - loescht alle Outfits fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet ohne das ein Outfit geloescht wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
@@ -180,10 +198,14 @@ public class OutfitsRestRessource {
         }
     )
     public Response bearbeiteOutfit(@PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
-        
+        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
         if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
+            outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
             return Response.status(Response.Status.OK).build();
         }
+        outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }
