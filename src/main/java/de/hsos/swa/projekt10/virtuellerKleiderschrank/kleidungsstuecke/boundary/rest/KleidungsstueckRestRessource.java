@@ -7,14 +7,10 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kl
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,9 +36,9 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Kleidungsstuecke")
-public class KleidungsstueckeRestRessource {
+public class KleidungsstueckRestRessource {
     @LoggerName("kl-ressource")
-    private static Logger kleidungLog = Logger.getLogger(KleidungsstueckeRestRessource.class);
+    private static Logger kleidungLog = Logger.getLogger(KleidungsstueckRestRessource.class);
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
