@@ -6,12 +6,12 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 
 public class KleidungsstueckOutputDTO {
-    long kleidungsId;
-    String groesse;
-    Farbe farbe;
-    Typ typ;
-    String name;
-    List<String> kategorien;
+    public long kleidungsId;
+    public String groesse;
+    public Farbe farbe;
+    public Typ typ;
+    public String name;
+    public List<String> kategorien;
 
     public KleidungsstueckOutputDTO() {
     }
@@ -29,9 +29,10 @@ public class KleidungsstueckOutputDTO {
     public static class Converter {
         //TODO prüfen, ob Inject benutzt werden soll/kann
         public static KleidungsstueckOutputDTO toKleidungsstueckOutputDTO (Kleidungsstueck kleidungsstueck)
-        {
+        {   
+            KleidungsstueckOutputDTO kleidungsstueckDTO = new KleidungsstueckOutputDTO(kleidungsstueck.getKleidungsId(), kleidungsstueck.getGroesse(), kleidungsstueck.getFarbe(), kleidungsstueck.getTyp(), kleidungsstueck.getName(), kleidungsstueck.getKategorien());
             //TODO DTO eventuell hier nochmal Validieren? oder sicher vollständig, da schon in Ressource validiert wird und nur dort InputDTO erstellt wird.
-            return new KleidungsstueckOutputDTO(kleidungsstueck.getKleidungsId(), kleidungsstueck.getGroesse(), kleidungsstueck.getFarbe(), kleidungsstueck.getTyp(), kleidungsstueck.getName(), kleidungsstueck.getKategorien());
+            return kleidungsstueckDTO;
         }
     }  
 }
