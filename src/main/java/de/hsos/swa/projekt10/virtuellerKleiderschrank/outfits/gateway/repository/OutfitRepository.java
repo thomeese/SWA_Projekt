@@ -7,6 +7,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
@@ -147,15 +148,15 @@ public class OutfitRepository implements OutfitKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public List<Outfit> gebeAlleOutfitsVomBenutzer(String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
-        TypedQuery<Outfit> query= this.entityManager.createQuery("select o from Outfit o", Outfit.class);
         try{
-            List<Outfit> outfitList = query.getResultList().stream().filter(outfit -> {
-                return outfit.getBenutzername().equals(benutzername);
-            }).toList();
+            String querryString = "select o from Outfit o where o.benutzername = :benutzername";
+            TypedQuery<Outfit> query= this.entityManager.createQuery(querryString, Outfit.class);
+            query.setParameter("benutzername",benutzername);
+            List<Outfit> outfitList = query.getResultList();
             outfitLog.trace(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - holt alle Outfits fuer einen Benutzer durch Repository");
             outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - beendet");
             return outfitList;
-        }catch(IllegalStateException | QueryTimeoutException | TransactionRequiredException e){
+        }catch(IllegalStateException | PersistenceException e){
             outfitLog.trace(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - holt alle Outfits fuer einen Benutzer durch Repository");
             outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - beendet ohne das Outfits gefunden wurden");
             return new ArrayList<Outfit>();
@@ -167,15 +168,16 @@ public class OutfitRepository implements OutfitKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public Outfit gebeOutfitVomBenutzerMitId(long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - gestartet");
-        TypedQuery<Outfit> query= this.entityManager.createQuery("select o from Outfit o", Outfit.class);
         try{
-            Outfit erg = query.getResultList().stream().filter(outfit -> {
-                return outfit.getBenutzername().equals(benutzername) && outfit.getOutfitId ()== outfitId;
-            }).findFirst().get();
+            String querryString = "select o from Outfit o where o.benutzername = :benutzername o.outfitId = :outfitId";
+            TypedQuery<Outfit> query= this.entityManager.createQuery(querryString, Outfit.class);
+            query.setParameter("benutzername",benutzername);
+            query.setParameter("outfitId",outfitId);
+            Outfit outfit = query.getSingleResult();
             outfitLog.trace(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - holt ein Outfit nach Id fuer einen Benutzer durch Repository");
             outfitLog.debug(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - beendet");
-            return erg;
-        }catch(IllegalStateException | QueryTimeoutException | TransactionRequiredException e){
+            return outfit;
+        }catch(IllegalStateException | PersistenceException e){
             outfitLog.trace(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - holt ein Outfit nach Id fuer einen Benutzer durch Repository");
             outfitLog.debug(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - beendet ohne das ein Outfit gefunden wurde");
             return null; 
