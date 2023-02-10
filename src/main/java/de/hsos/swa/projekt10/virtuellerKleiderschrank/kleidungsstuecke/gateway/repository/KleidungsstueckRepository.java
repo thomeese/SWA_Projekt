@@ -6,6 +6,10 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.LockTimeoutException;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
@@ -72,19 +76,21 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         return true;
     }
 
+    
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
     public Kleidungsstueck gebeKleidungsstueckVomBenutzerMitId(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         try{
-            Kleidungsstueck erg =query.getResultList().stream().filter(kleidung -> {
-                return kleidung.getBenutzername().equals(benutzername) && kleidung.getKleidungsId() == kleidungsId;
-            }).findFirst().get();
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.kleidungsId = :kleidungsId";
+            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername",benutzername);
+            query.setParameter("kleidungsId",kleidungsId);
+            Kleidungsstueck erg = query.getSingleResult();
             kleidungLog.trace(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - beendet");
             return erg;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
+        }catch(IllegalStateException | PersistenceException e){
             kleidungLog.trace(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - beendet ohne das ein Kleidungsstueck gefunden wurde");
             return null;
@@ -96,14 +102,15 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinesTyp(Typ typ, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         try{
-            List<Kleidungsstueck> kleidungLists = query.getResultList().stream().filter(kleidung -> {
-                return kleidung.getBenutzername().equals(benutzername) && kleidung.getTyp() == typ;
-            }).toList();
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.typ = :typ";
+            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername",benutzername);
+            query.setParameter("typ",typ);
+            List<Kleidungsstueck> kleidungsList = query.getResultList();
             kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet");
-            return kleidungLists;
+            return kleidungsList;
         }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
             kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
@@ -111,17 +118,19 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         }
     }
 
+
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerMitNamen(String name, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         try{
-        List<Kleidungsstueck> kleidungsList = query.getResultList().stream().filter(kleidung -> {
-            return kleidung.getBenutzername().equals(benutzername) && kleidung.getName().equals(name);
-        }).toList();
-        kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
-        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet");
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.name = :name";
+            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername",benutzername);
+            query.setParameter("name",name);
+            List<Kleidungsstueck> kleidungsList = query.getResultList();
+            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet");
         return kleidungsList;
         }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
             kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
@@ -173,11 +182,11 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         try{
-            List<Kleidungsstueck> kleidungsList = query.getResultList().stream().filter(kleidung -> {
-                return kleidung.getBenutzername().equals(benutzername);
-            }).toList();
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername";
+            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+            List<Kleidungsstueck> kleidungsList = query.getResultList();
             kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet");
             return kleidungsList;
