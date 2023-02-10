@@ -41,7 +41,6 @@ public class OutfitIdRestRessource {
 
 
     @GET
-    @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
@@ -69,7 +68,6 @@ public class OutfitIdRestRessource {
     }
 
     @DELETE
-    @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
@@ -98,7 +96,6 @@ public class OutfitIdRestRessource {
     }
 
     @PATCH
-    @Path("{id}")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(

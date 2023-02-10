@@ -145,7 +145,6 @@ public class OutfitRepository implements OutfitKatalog{
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
     public List<Outfit> gebeAlleOutfitsVomBenutzer(String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
         try{
@@ -165,11 +164,10 @@ public class OutfitRepository implements OutfitKatalog{
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
     public Outfit gebeOutfitVomBenutzerMitId(long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - gestartet");
         try{
-            String querryString = "select o from Outfit o where o.benutzername = :benutzername o.outfitId = :outfitId";
+            String querryString = "select o from Outfit o where o.benutzername = :benutzername and o.outfitId = :outfitId";
             TypedQuery<Outfit> query= this.entityManager.createQuery(querryString, Outfit.class);
             query.setParameter("benutzername",benutzername);
             query.setParameter("outfitId",outfitId);

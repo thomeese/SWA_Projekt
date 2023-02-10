@@ -1,5 +1,5 @@
 {#include main.html}
-{#title}Meine Kleidungsstücke{/title}
+{#title}Meine Outfits{/title}
 {#content}
 <div>
 	{#include kleidungsstueckModal.html}{/include}
@@ -8,16 +8,16 @@
 			<table class="table table-bordered border-dark">
 				<thead>
 					<tr>
-						<th scope="col-10">Name des Kleidungsstücks</th>
+						<th scope="col-10">Name des Outfits</th>
 						<th scope="col-1">Aktionen</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#for kleidungsstueck in kleidungsstuecke}
+					{#for outfit in outfits}
 					<tr>
-						<td><a href="/virtuellerkleiderschrank/v1/web/clothes/{kleidungsstueck.kleidungsId}"
+						<td><a href="/virtuellerkleiderschrank/v1/web/outfits/{outfit.outfitId}"
 								class="list-group-item list-group-item-action" aria-current="true">
-								{kleidungsstueck.name}
+								{outfit.name}
 							</a></td>
 						<td>
 							<button type="button" class="btn btn-primary">
@@ -30,7 +30,7 @@
 								</svg>
 							</button>
 							<button type="button" class="btn btn-danger"
-								onclick="loescheItem({kleidungsstueck.kleidungsId},'kleidung')">
+								onclick="loescheItem({outfit.outfitId},'outfit')">
 								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
 									class="bi bi-trash3" viewBox="0 0 16 16">
 									<path

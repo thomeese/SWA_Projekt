@@ -61,3 +61,13 @@ INSERT INTO kleidungsstueck_kategorien values (19,'Freizeit');
 INSERT INTO kleidungsstueck_kategorien values (19,'Sport');
 INSERT INTO kleidungsstueck_kategorien values (20,'Freizeit');
 INSERT INTO kleidungsstueck_kategorien values (20,'Sport');
+--Oufit von Gustav
+INSERT INTO outfit values (nextval('hibernate_sequence'),'gustav','false','Sport');
+
+INSERT INTO outfit_kategorien values (21,'Sport');
+INSERT INTO outfit_kategorien values (21,'Freizeit');
+
+INSERT INTO outfit_kleidungsstuecke values (21,17);
+INSERT INTO outfit_kleidungsstuecke values (21,18);
+INSERT INTO outfit_kleidungsstuecke values (21,19);
+INSERT INTO outfit_kleidungsstuecke values (21,20);

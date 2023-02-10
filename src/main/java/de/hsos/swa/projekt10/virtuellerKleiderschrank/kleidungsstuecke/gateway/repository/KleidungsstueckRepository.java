@@ -6,9 +6,6 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.QueryTimeoutException;
 import javax.persistence.TransactionRequiredException;
@@ -39,7 +36,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - gestartet");
-        Kleidungsstueck kleidungsstueck = this.findById(kleidungsId, benutzername);
+        Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
         if(kleidungsstueck == null){
             kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
@@ -75,17 +72,8 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet");
         return true;
     }
-
-    private Kleidungsstueck findById(long kleidungsId, String benutzername) {
-        Kleidungsstueck kleidungsstueck = this.entityManager.find(Kleidungsstueck.class, kleidungsId);
-        if(kleidungsstueck.getBenutzername().equals(benutzername)) {
-            return kleidungsstueck;
-        }
-        return null;
-    }
     
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
     public Kleidungsstueck gebeKleidungsstueckVomBenutzerMitId(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - gestartet");
         try{
@@ -188,7 +176,6 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
         try{
