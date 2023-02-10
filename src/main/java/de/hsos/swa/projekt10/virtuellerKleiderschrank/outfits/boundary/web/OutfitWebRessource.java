@@ -3,13 +3,21 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.web;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest.OutfitIdRestRessource;
@@ -35,6 +43,9 @@ public class OutfitWebRessource {
     private OutfitsVerwaltung outfitsVerwaltung;
 
     @Inject
+    private DTOKonverter dtoKonverter;
+
+    @Inject
     SecurityIdentity sc;
 
 
@@ -57,17 +68,20 @@ public class OutfitWebRessource {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Outfit.",
         description = "Erstellt ein neues Outfit im Repository fuer den eingeloggten Benutzer mit den Daten aus dem DTO Objekt."
     )
-    public TemplateInstance erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
+    public Response erstelleNeuesOutfit(@Context UriInfo uriInfo, OutfitFormDTO outfitFormDTO) {
         outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - gestartet");
+        OutfitInputDTO outfitInputDTO = dtoKonverter.konvert(outfitFormDTO);
         long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
         outfitLog.trace(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - erstellt ein neues Outfit fuer einen Benutzer durch Rest-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
-        return Templates.general(null);
+        return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(outfitId)).build()).build();
     }
 }

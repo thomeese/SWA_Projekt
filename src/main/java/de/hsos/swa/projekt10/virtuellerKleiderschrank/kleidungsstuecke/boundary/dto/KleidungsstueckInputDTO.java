@@ -10,6 +10,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Fa
 
 public class KleidungsstueckInputDTO {
 
+    @NotBlank(message="Groesse darf nicht leer sein")
     public String groesse;
     @NotNull(message="Farbe darf nicht leer sein")
     public Farbe farbe;
