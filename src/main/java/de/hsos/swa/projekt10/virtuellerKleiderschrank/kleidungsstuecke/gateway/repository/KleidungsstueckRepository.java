@@ -39,7 +39,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - gestartet");
-        Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
+        Kleidungsstueck kleidungsstueck = this.findById(kleidungsId, benutzername);
         if(kleidungsstueck == null){
             kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
@@ -76,6 +76,13 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         return true;
     }
 
+    private Kleidungsstueck findById(long kleidungsId, String benutzername) {
+        Kleidungsstueck kleidungsstueck = this.entityManager.find(Kleidungsstueck.class, kleidungsId);
+        if(kleidungsstueck.getBenutzername().equals(benutzername)) {
+            return kleidungsstueck;
+        }
+        return null;
+    }
     
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
@@ -143,11 +150,12 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerFarbe(Farbe farbe, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
         try{
-            List<Kleidungsstueck> kleidungsList = query.getResultList().stream().filter(kleidung -> {
-                return kleidung.getBenutzername().equals(benutzername) && kleidung.getFarbe() == farbe;
-            }).toList();
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.farbe = :farbe";
+            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername",benutzername);
+            query.setParameter("farbe",farbe);
+            List<Kleidungsstueck> kleidungsList = query.getResultList();
             kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - holt alle Kleidungsstuecke einer Farbe fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - beendet");
             return kleidungsList;
@@ -157,6 +165,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
             return new ArrayList<Kleidungsstueck>();
         }
     }
+
 
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)

@@ -1,0 +1,20 @@
+{@de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO kleidungsstueck}
+{#include main}
+{#title}{kleidungsstueck.name}{/title}
+{#content}
+		<div style="margin-top: 3%;">
+		<label style="font-weight:  bolder;">Größe: </label>
+		<p style="text-align: left; margin-left: 2%;">{kleidungsstueck.groesse}</p>
+		<label style="font-weight:  bolder;">Farbe: </label>
+		<p style="text-align: left; margin-left: 2%;">{kleidungsstueck.farbe}</p>
+		<label style="font-weight:  bolder;">Kategorien: </label>
+		<div class="list-group" style="margin-left: 2%; margin-right: 25%; margin-top: 1%;">
+				 {#for kategorie in kleidungsstueck.kategorien} 
+				<p class="list-group-item list-group-item-action" aria-current="true">
+					{kategorie}
+				</p>
+				{/}
+			</div>
+		</div>
+{/content}
+{/include}

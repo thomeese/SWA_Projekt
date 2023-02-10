@@ -31,5 +31,5 @@ public enum Typ {
    Jumpsuit,
    Mantel,
    Blazer,
-   Socken
+   Socken;
 }

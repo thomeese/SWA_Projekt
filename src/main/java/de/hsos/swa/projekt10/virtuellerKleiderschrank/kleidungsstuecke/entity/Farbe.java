@@ -1,5 +1,8 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity;
 
+import io.quarkus.qute.TemplateEnum;
+
+@TemplateEnum
 public enum Farbe {
     Beige,
     Blau,
