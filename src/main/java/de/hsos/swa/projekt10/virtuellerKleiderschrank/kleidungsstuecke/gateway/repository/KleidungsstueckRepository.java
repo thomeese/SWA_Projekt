@@ -210,7 +210,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Transactional(value=TxType.REQUIRES_NEW)
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - gestartet");
-        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.type, dto.name, dto.kategorien, benutzername);
+        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.typ, dto.name, dto.kategorien, benutzername);
         this.entityManager.persist(kleidung);
         kleidungLog.trace(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - beendet");
@@ -234,8 +234,8 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         if(dto.farbe != null){
             kleidung.setFarbe(dto.farbe);
         }
-        if(dto.type != null){
-            kleidung.setTyp(dto.type);
+        if(dto.typ != null){
+            kleidung.setTyp(dto.typ);
         }
         kleidung.setBenutzername(benutzername);
         kleidung.setKategorien(dto.kategorien);

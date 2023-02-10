@@ -2,10 +2,12 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 
 public interface OutfitKatalog {
-    public long erstelleOutfitFuerEinenBenutzer(OutfitInputDTO dto, String benutzername);
+    public long erstelleOutfitFuerEinenBenutzer(@Valid OutfitInputDTO dto, String benutzername);
     public boolean bearbeiteOutfitEinesBenutzers(OutfitInputDTO dto, long outfitId, String benutzername);
     public boolean loescheOutfitEinesBenutzers(long outfitId, String benutzername);
     public boolean loescheAlleOutfitsEinesBenutzers(String benutzername);

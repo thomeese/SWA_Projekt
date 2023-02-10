@@ -1,11 +1,14 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto;
 
 import java.util.List;
+
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 
 public class KleidungsstueckOutputDTO {
+
     public long kleidungsId;
     public String groesse;
     public Farbe farbe;

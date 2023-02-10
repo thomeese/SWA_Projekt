@@ -2,7 +2,11 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 public class OutfitInputDTO {
+
+    @NotBlank(message="Name darf nicht leer sein.")
     public String name;
     public List<String> kategorien;
 

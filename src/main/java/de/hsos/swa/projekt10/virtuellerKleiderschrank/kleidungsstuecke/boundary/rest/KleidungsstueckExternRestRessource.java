@@ -3,6 +3,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -50,7 +51,7 @@ public class KleidungsstueckExternRestRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueckMitExterneAPI(KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
+    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Valid KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
         long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
         return Response.status(Response.Status.OK).entity(kleidungsId).build();
     }
