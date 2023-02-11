@@ -4,9 +4,9 @@
     <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
     {#if !bearbeiten}<div id="nameHilfe" class="form-text">Wie soll dein Outfit heißen?</div>{/if}
 </div>
-<button hidden id="submitButton" type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Outfit erstellen{/if}</button>
+<button {#if bearbeiten}hidden{/if} id="submitButton" type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Outfit erstellen{/if}</button>
 </form>
-<button id="bearbeitenButton" class="btn btn-primary" onclick="">Outfit bearbeiten</button>
+{#if bearbeiten}<button id="bearbeitenButton" class="btn btn-primary" onclick="">Outfit bearbeiten</button>{/if}
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
@@ -17,11 +17,13 @@ let submitButton = document.getElementById("submitButton");
 let outfitForm = document.getElementById("outfitForm");
 let nameElement = document.getElementById("name");
 
+if(bearbeitenButton) {
 bearbeitenButton.addEventListener("click", () => {
     bearbeitenButton.setAttribute("hidden", "");
     submitButton.removeAttribute("hidden");
     nameElement.removeAttribute("disabled");
-} )
+});
+}
 
 outfitForm.addEventListener("submit", (event) => {
     event.preventDefault();

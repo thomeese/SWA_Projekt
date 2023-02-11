@@ -27,9 +27,9 @@
     {/for}
     </select>
 </div>
-<button id="submitButton" type="submit" class="btn btn-primary" hidden>{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
+<button id="submitButton" type="submit" class="btn btn-primary" {#if bearbeiten}hidden{/if}>{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
 </form>
-<button id="bearbeitenButton" class="btn btn-primary" onclick="">Kleidungsstueck bearbeiten</button>
+{#if bearbeiten} <button id="bearbeitenButton" class="btn btn-primary" onclick="">Kleidungsstueck bearbeiten</button>{/if}
 
 
 <script
@@ -47,6 +47,7 @@ let color = colorElement.options[colorElement.selectedIndex].text;
 let typeElement = document.getElementById("type");
 let type = typeElement.options[typeElement.selectedIndex].text;
 
+if(bearbeitenButton) {
 bearbeitenButton.addEventListener("click", (event) => {
     bearbeitenButton.setAttribute("hidden", "");
     document.getElementById("submitButton").removeAttribute("hidden");
@@ -55,13 +56,14 @@ bearbeitenButton.addEventListener("click", (event) => {
     colorElement.removeAttribute("disabled");
     typeElement.removeAttribute("disabled");
 });
+}
  
 
 kleidungsstueckForm.addEventListener("submit", (event) => {
     event.preventDefault();
     if(kleidungsstueckForm.className === "update") {
         
-        let data = "name=" +name.value + "&size=" + size.value + "&color=" + color + "&type=" + type;
+        let data = "name=" + nameElement.value + "&size=" + sizeElement.value + "&color=" + color + "&type=" + type;
 
         console.log(data);
         
