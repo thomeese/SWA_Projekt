@@ -37,7 +37,7 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.TEXT_HTML)
 public class KleidungsstueckIdWebRessource {
-    @LoggerName("kl-id-ressource")
+    @LoggerName("kl-web-id-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdWebRessource.class);
 
     @Inject
@@ -76,7 +76,7 @@ public class KleidungsstueckIdWebRessource {
     public TemplateInstance getKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        KleidungsstueckOutputDTO kleidungsstueckDTO = KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
+        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
         kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
         return Template.detail(kleidungsstueckDTO);

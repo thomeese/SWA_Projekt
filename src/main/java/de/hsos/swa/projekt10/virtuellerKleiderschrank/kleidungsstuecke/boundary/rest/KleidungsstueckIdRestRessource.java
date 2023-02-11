@@ -5,6 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
@@ -31,11 +32,14 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class KleidungsstueckIdRestRessource {
-    @LoggerName("kl-id-ressource")
+    @LoggerName("kl-rest-id-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdRestRessource.class);
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
+
+    @Inject
+    private DTOKonverter dtoKonverter;
 
     @Inject
     SecurityIdentity sc;
@@ -62,7 +66,7 @@ public class KleidungsstueckIdRestRessource {
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        KleidungsstueckOutputDTO kleidungsstueckDTO = KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
+        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
         kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
         return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();

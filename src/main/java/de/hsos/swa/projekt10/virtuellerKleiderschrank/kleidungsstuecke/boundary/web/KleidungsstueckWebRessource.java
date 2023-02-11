@@ -4,6 +4,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
@@ -41,7 +42,7 @@ import io.quarkus.qute.TemplateInstance;
 
 @Tag(name = "Kleidungsstuecke")
 public class KleidungsstueckWebRessource {
-    @LoggerName("kl-ressource")
+    @LoggerName("kl-web-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckWebRessource.class);
 
     @Inject
@@ -75,11 +76,11 @@ public class KleidungsstueckWebRessource {
             )
         }
     )
-    public TemplateInstance getAlleKleidungsstuecke() {
+    public TemplateInstance getAlleKleidungsstuecke(KleidungsstueckFilter filter) {
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke("gustav");//this.sc.getPrincipal().getName());
-        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = kleidungsstuecke.stream().map(kleidungsstueck -> KleidungsstueckOutputDTO.Converter.toKleidungsstueckOutputDTO(kleidungsstueck)).toList();
+        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, "gustav");//this.sc.getPrincipal().getName());
+        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = kleidungsstuecke.stream().map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck)).toList();
         kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");
 

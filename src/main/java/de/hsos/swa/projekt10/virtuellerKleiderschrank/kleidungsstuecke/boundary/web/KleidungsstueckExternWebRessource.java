@@ -25,7 +25,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.TEXT_HTML)
 public class KleidungsstueckExternWebRessource {
-    @LoggerName("kl-extern-ressource")
+    @LoggerName("kl-web-extern-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckExternWebRessource.class);
 
     @Inject

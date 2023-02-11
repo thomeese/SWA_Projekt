@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.acl.KleidungsstueckVonOnlineHaendler;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
@@ -22,7 +23,7 @@ public class KleidungsstueckeVerwaltung {
     @Inject
     private KleidungsstueckVonOnlineHaendler kOnlineHaendler;
 
-    public List<Kleidungsstueck> holeAlleKleidungsstuecke(String benutzername) {
+    public List<Kleidungsstueck> holeAlleKleidungsstuecke(KleidungsstueckFilter filter, String benutzername) {
         return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
     }
 
@@ -56,21 +57,5 @@ public class KleidungsstueckeVerwaltung {
 
     public boolean bearbeiteKleidungsstueck(long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO, String benutzername) {
         return this.kKatalog.bearbeiteKleidungsstueckEinesBenutzers(kleidungsId, kleidungsstueckInputDTO, benutzername);
-    }
-
-    public List<Kleidungsstueck> filterNachFarbe(Farbe farbe, String benutzername) {
-        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzerEinerFarbe(farbe, benutzername);
-    }
-
-    public List<Kleidungsstueck> filterNachKategorie(String kategorie, String benutzername) {
-        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzerEinerKategorie(kategorie, benutzername);
-    }
-
-    public List<Kleidungsstueck> filterNachTyp(Typ typ, String benutzername) {
-        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzerEinesTyp(typ, benutzername);
-    }
-
-    public List<Kleidungsstueck> filterNachName(String name, String benutzername) {
-        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzerMitNamen(name, benutzername);
     }
 }

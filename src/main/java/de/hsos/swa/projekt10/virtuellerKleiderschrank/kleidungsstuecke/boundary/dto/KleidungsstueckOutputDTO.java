@@ -28,14 +28,4 @@ public class KleidungsstueckOutputDTO {
         this.name = name;
         this.kategorien = kategorien;
     }
-
-    public static class Converter {
-        //TODO prüfen, ob Inject benutzt werden soll/kann
-        public static KleidungsstueckOutputDTO toKleidungsstueckOutputDTO (Kleidungsstueck kleidungsstueck)
-        {   
-            //TODO DTO eventuell hier nochmal Validieren? oder sicher vollständig, da schon in Ressource validiert wird und nur dort InputDTO erstellt wird.
-            KleidungsstueckOutputDTO kleidungsstueckDTO = new KleidungsstueckOutputDTO(kleidungsstueck.getKleidungsId(), kleidungsstueck.getGroesse(), kleidungsstueck.getFarbe(), kleidungsstueck.getTyp(), kleidungsstueck.getName(), kleidungsstueck.getKategorien());
-            return kleidungsstueckDTO;
-        }
-    }  
 }
