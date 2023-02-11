@@ -1,37 +1,44 @@
 <form action="/virtuellerkleiderschrank/v1/web/outfits" id="outfitForm" class="{#if bearbeiten}update{#else}new{/if}" method="post">
 <div class="mb-3">
     <label for="name" class="form-label">Name</label>
-    <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" value="{#if bearbeiten}{outfit.name}{/if}">
-    <div id="nameHilfe" class="form-text">Wie soll dein Outfit heißen?</div>
+    <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
+    {#if !bearbeiten}<div id="nameHilfe" class="form-text">Wie soll dein Outfit heißen?</div>{/if}
 </div>
-<button type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
+<button hidden id="submitButton" type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Outfit erstellen{/if}</button>
 </form>
+<button id="bearbeitenButton" class="btn btn-primary" onclick="">Outfit bearbeiten</button>
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
 <script>
+let bearbeitenButton = document.getElementById("bearbeitenButton");
+let submitButton = document.getElementById("submitButton");
+
 let outfitForm = document.getElementById("outfitForm");
-console.log(outfitForm.className)
+let nameElement = document.getElementById("name");
+
+bearbeitenButton.addEventListener("click", () => {
+    bearbeitenButton.setAttribute("hidden", "");
+    submitButton.removeAttribute("hidden");
+    nameElement.removeAttribute("disabled");
+} )
 
 outfitForm.addEventListener("submit", (event) => {
     event.preventDefault();
     if(outfitForm.className === "update") {
-        let name = document.getElementById("name").value;
-        console.log(data);
-        
-$.ajax({    
-                type: "PUT",
-                contentType: "application/x-www-form-urlencoded;charset=utf-8",
-                url: window.location.pathname,
-                data: data,
-                timeout: 3000,
-                success:function(response){
-                    console.log(response);              
-                },
-                error: function(){
-                    console.log("error!");
-                }
-            });
+        $.ajax({    
+            type: "PUT",
+            contentType: "application/x-www-form-urlencoded;charset=utf-8",
+            url: window.location.pathname,
+            data: name.value,
+            timeout: 3000,
+            success:function(response){
+                console.log(response);              
+            },
+            error: function(){
+                console.log("error!");
+            }
+        });
     } else {
         outfitForm.submit();
     }
