@@ -15,6 +15,10 @@ import javax.transaction.Transactional.TxType;
 
 import org.jboss.logging.Logger;
 
+import javax.enterprise.event.Event;
+
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
@@ -32,6 +36,12 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     @Inject
     private EntityManager entityManager;
 
+    @Inject
+    Event<KleidungsstueckEntfernt> kleidungsstueckEntferntEvent;
+
+    @Inject
+    Event<AlleKleidungsstueckeEntfernt> alleKleidungsstueckEntferntEvent;
+
     @Override
     @Transactional(value=TxType.REQUIRES_NEW)
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
@@ -44,6 +54,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
         }
         try{
             this.entityManager.remove(kleidungsstueck);
+            this.kleidungsstueckEntferntEvent.fireAsync(new KleidungsstueckEntfernt(kleidungsId, benutzername));
         }catch(IllegalArgumentException | TransactionRequiredException e){
             kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
@@ -59,17 +70,28 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - gestartet");
         List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
+        List<Long> kleidungsIds= new ArrayList<Long>(); // dient dem zwischenspeichern der Ids fuer den Fehlerfall
         try{
             for(int index = 0; index < zuLoeschen.size(); index++){
-                this.entityManager.remove(zuLoeschen.get(index));
+                Kleidungsstueck kleidung = zuLoeschen.get(index);
+                this.entityManager.remove(kleidung);
+                kleidungsIds.add(kleidung.getKleidungsId());
             }
         }catch(IllegalArgumentException | TransactionRequiredException e){
             kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet ohne das alle Kleidungsstuecke geloescht wurde");
+            //Wenn etwas beim Loeschen aller Kleidungsstueck schief geht muessen alle Kleidungsstuecke bei den Outfits
+            //entfernt werden, die geloescht werden konnten.
+            if(kleidungsIds.size() > 0){
+                for(int index = 0; index < zuLoeschen.size(); index++){
+                    this.kleidungsstueckEntferntEvent.fireAsync(new KleidungsstueckEntfernt(kleidungsIds.get(index), benutzername));
+                }
+            }
             return false;
         }
         kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet");
+        this.alleKleidungsstueckEntferntEvent.fireAsync(new AlleKleidungsstueckeEntfernt(benutzername));
         return true;
     }
     

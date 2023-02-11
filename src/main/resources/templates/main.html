@@ -28,6 +28,26 @@
 
             }
         }
+        function loescheAlleItems(type){
+            if (confirm('Sicher das Sie alle Objekt löschen möchten')) {
+                if (type === 'kleidung') {
+                    return fetch('http://localhost:8080/virtuellerkleiderschrank/v1/api/clothes/', {
+                        method: 'Delete',
+                        headers: {
+                            'Content-type': 'application/json'
+                        }
+                    });
+                } else if (type === 'outfit') {
+                    return fetch('http://localhost:8080/virtuellerkleiderschrank/v1/api/outfits/', {
+                        method: 'Delete',
+                        headers: {
+                            'Content-type': 'application/json'
+                        }
+                    });
+                }
+
+            }
+        }
     </script>
     <title>{#insert title}Default Title{/}</title>
 </head>
