@@ -5,6 +5,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
@@ -19,6 +21,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
+import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
@@ -39,6 +42,9 @@ public class KleidungsstueckIdWebRessource {
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
+
+    @Inject
+    private DTOKonverter dtoKonverter;
 
     @Inject
     SecurityIdentity sc;
@@ -105,7 +111,8 @@ public class KleidungsstueckIdWebRessource {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
-    @PATCH
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
@@ -121,9 +128,10 @@ public class KleidungsstueckIdWebRessource {
             )
         }
     )
-    public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
+    public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckFormDTO kleidungsstueckFormDTO) {
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
         //TODO eventuell aktualisiertes Objekt zurueckgeben
+        KleidungsstueckInputDTO kleidungsstueckInputDTO = this.dtoKonverter.konvert(kleidungsstueckFormDTO);
         if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, this.sc.getPrincipal().getName())) {
             kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
             kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet");

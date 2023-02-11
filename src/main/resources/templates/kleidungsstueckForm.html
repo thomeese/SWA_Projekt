@@ -1,0 +1,73 @@
+<form action="/virtuellerkleiderschrank/v1/web/clothes" id="kleidungsstueckForm" class="{#if bearbeiten}update{#else}new{/if}" method="post">
+<div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" value="{#if bearbeiten}{kleidungsstueck.name}{/if}">
+    <div id="nameHilfe" class="form-text">Gib deinem Kleidungsstueck einen eigenen Namen</div>
+</div>
+<div class="mb-3">
+    <label for="inputGroesse" class="form-label">Größe</label>
+    <input name="size" type="text" class="form-control" id="size" aria-describedby="groesseHilfe" value="{#if bearbeiten}{kleidungsstueck.groesse}{/if}">
+    <div id="groesseHilfe" class="form-text">Du kannst alle moeglichen Groessen eingeben</div>
+</div>
+<div class="mb-3">
+    <label class="form-label">Typ</label>
+    <select name="type" class="form-select" id="type">
+    <option selected>Wähle den Kleidungstyp</option>
+    {#for typ in TypList:typen}
+        <option {#if bearbeiten}{#if kleidungsstueck.typ == typ}selected{/if}{/if} value="{typ}">{typ}</option>
+    {/for}
+    </select>
+</div>
+<div class="mb-3">
+    <label class="form-label">Farbe</label>
+    <select name="color" class="form-select" id="color">
+    <option>Wähle die Hauptfarbe</option>
+    {#for farbe in FarbList:farben}
+        <option {#if bearbeiten}{#if kleidungsstueck.farbe == farbe}selected{/if}{/if} value="{farbe}">{farbe}</option>
+    {/for}
+    </select>
+</div>
+
+<button type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
+</form>
+
+<script
+			  src="https://code.jquery.com/jquery-3.6.3.min.js"
+			  integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+			  crossorigin="anonymous"></script>
+<script>
+let kleidungsstueckForm = document.getElementById("kleidungsstueckForm");
+console.log(kleidungsstueckForm.className)
+
+kleidungsstueckForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if(kleidungsstueckForm.className === "update") {
+        let name = document.getElementById("name").value;
+        let size = document.getElementById("size").value;
+        let colorElement = document.getElementById("color");
+        let color = colorElement.options[colorElement.selectedIndex].text;
+        let typeElement = document.getElementById("type");
+        let type = typeElement.options[typeElement.selectedIndex].text;
+        
+        let data = "name=" +name + "&size=" + size + "&color=" + color + "&type=" + type;
+
+        console.log(data);
+        
+$.ajax({    
+                type: "PUT",
+                contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                url: window.location.pathname,
+                data: data,
+                timeout: 3000,
+                success:function(response){
+                    console.log(response);              
+                },
+                error: function(){
+                    console.log("error!");
+                }
+            });
+    } else {
+        kleidungsstueckForm.submit();
+    }
+})
+</script>

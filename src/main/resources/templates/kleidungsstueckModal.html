@@ -6,42 +6,11 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered ">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="addModalLabel">Neues Kleidungsstueck erstellen</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-left">
-                <form action="/virtuellerkleiderschrank/v1/web/clothes" method="post">
-                    <div class="mb-3">
-                      <label for="name" class="form-label">Name</label>
-                      <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe">
-                      <div id="nameHilfe" class="form-text">Gib deinem Kleidungsstueck einen eigenen Namen</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="inputGroesse" class="form-label">Größe</label>
-                      <input name="size" type="text" class="form-control" id="size" aria-describedby="groesseHilfe">
-                      <div id="groesseHilfe" class="form-text">Du kannst alle moeglichen Groessen eingeben</div>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Typ</label>
-                      <select name="type" class="form-select" id="type">
-                        <option selected>Wähle den Kleidungstyp</option>
-                        {#for typ in TypList:typen}
-                          <option value="{typ}">{typ}</option>
-                        {/for}
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Farbe</label>
-                      <select name="color" class="form-select" id="color">
-                        <option selected>Wähle die Hauptfarbe</option>
-                        {#for farbe in FarbList:farben}
-                          <option value="{farbe}">{farbe}</option>
-                        {/for}
-                      </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </form>
+                {#include kleidungsstueckForm.html bearbeiten=false} {/include}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
