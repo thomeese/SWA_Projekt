@@ -95,7 +95,6 @@ public class KleidungsstueckIdWebRessource {
     )
     public Response loescheKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - gestartet");
-        String name = this.sc.getPrincipal().getName();
         if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, this.sc.getPrincipal().getName())) {
             kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet");

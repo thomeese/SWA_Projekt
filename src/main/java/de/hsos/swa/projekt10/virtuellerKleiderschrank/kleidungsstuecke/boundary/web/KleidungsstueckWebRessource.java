@@ -1,5 +1,7 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.web;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
@@ -18,7 +20,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -33,8 +38,7 @@ import io.quarkus.qute.TemplateInstance;
 
 
 @Path("/web/clothes")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.TEXT_HTML)
+
 @Tag(name = "Kleidungsstuecke")
 public class KleidungsstueckWebRessource {
     @LoggerName("kl-ressource")
@@ -42,6 +46,9 @@ public class KleidungsstueckWebRessource {
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
+
+    @Inject
+    private DTOKonverter dtoKonverter;
 
     @Inject
     SecurityIdentity sc;
@@ -52,6 +59,7 @@ public class KleidungsstueckWebRessource {
     }
 
     @GET
+    @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
@@ -80,6 +88,8 @@ public class KleidungsstueckWebRessource {
 
     
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
@@ -95,16 +105,20 @@ public class KleidungsstueckWebRessource {
             )
         }
     )
-    public TemplateInstance erstelleNeuesKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO) {
+    public Response erstelleNeuesKleidungsstueck(@Context UriInfo uriInfo, KleidungsstueckFormDTO kleidungsstueckFormDTO) {
         //TODO eventuell erstelltes Objekt zurueckgeben
+        KleidungsstueckInputDTO kleidungsstueckInputDTO = dtoKonverter.konvert(kleidungsstueckFormDTO);
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, this.sc.getPrincipal().getName());
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsstueckInputDTO, this.sc.getPrincipal().getName());
         kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
-        return Templates.general(null);
+        
+        return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
     }
 
     @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(

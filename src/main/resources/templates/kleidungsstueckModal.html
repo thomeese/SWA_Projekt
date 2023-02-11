@@ -10,32 +10,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-left">
-                <form action="/">
+                <form action="/virtuellerkleiderschrank/v1/web/clothes" method="post">
                     <div class="mb-3">
-                      <label for="inputName" class="form-label">Name</label>
-                      <input type="text" class="form-control" id="inputName" aria-describedby="nameHilfe">
+                      <label for="name" class="form-label">Name</label>
+                      <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe">
                       <div id="nameHilfe" class="form-text">Gib deinem Kleidungsstueck einen eigenen Namen</div>
                     </div>
                     <div class="mb-3">
                       <label for="inputGroesse" class="form-label">Größe</label>
-                      <input type="text" class="form-control" id="inputGroesse" aria-describedby="groesseHilfe">
+                      <input name="size" type="text" class="form-control" id="size" aria-describedby="groesseHilfe">
                       <div id="groesseHilfe" class="form-text">Du kannst alle moeglichen Groessen eingeben</div>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Typ</label>
-                      <select class="form-select">
+                      <select name="type" class="form-select" id="type">
                         <option selected>Wähle den Kleidungstyp</option>
                         {#for typ in TypList:typen}
-                          <option value="1">{typ}</option>
+                          <option value="{typ}">{typ}</option>
                         {/for}
                       </select>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Farbe</label>
-                      <select class="form-select">
+                      <select name="color" class="form-select" id="color">
                         <option selected>Wähle die Hauptfarbe</option>
                         {#for farbe in FarbList:farben}
-                          <option value="1">{farbe}</option>
+                          <option value="{farbe}">{farbe}</option>
                         {/for}
                       </select>
                     </div>
