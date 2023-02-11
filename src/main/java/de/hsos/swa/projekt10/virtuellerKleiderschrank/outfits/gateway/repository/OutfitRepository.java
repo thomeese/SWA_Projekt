@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -16,6 +18,9 @@ import javax.transaction.Transactional.TxType;
 
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
@@ -144,6 +149,29 @@ public class OutfitRepository implements OutfitKatalog{
         }
     }
 
+    @Transactional(value=TxType.REQUIRES_NEW)
+    public boolean entferneAlleKleidungsstueckeVomOutfit(long outfitId, String benutzername){
+        outfitLog.debug(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - gestartet");
+        Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
+        if(outfit == null){
+            outfitLog.trace(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - entfernt alle Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Repository");
+            outfitLog.debug(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - beendet ohne das ein Kleidungsstueck entfernt wurde");
+            return false;
+        }
+        outfit.setKleidungsstuecke(new ArrayList<Long>());
+        try{
+            this.entityManager.persist(outfit);
+            outfitLog.trace(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - entfernt alle Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Repository");
+            outfitLog.debug(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - beendet");
+        return true;
+        }catch(ClassCastException | NullPointerException | UnsupportedOperationException 
+        |EntityExistsException | IllegalArgumentException | TransactionRequiredException e){
+            outfitLog.trace(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - entfernt alle Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Repository");
+            outfitLog.debug(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - beendet ohne das alle Kleidungsstuecke entfernt wurden");
+            return false;
+        }
+    }
+
     @Override
     public List<Outfit> gebeAlleOutfitsVomBenutzer(String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
@@ -211,6 +239,43 @@ public class OutfitRepository implements OutfitKatalog{
         outfitLog.trace(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - holt ein geteiltes Outfit nach Id durch Repository");
         outfitLog.debug(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - beendet");
         return outfit;
+    }
+
+    /**
+     * Die Methode behandelt das KleidungstueckEntfernt-Event.
+     * Bei der Behandlung werden alle Outfits des Benutzers
+     * durchsucht, wenn ein Outfit die KleidungsstueckId besitzt
+     * wird diese aus dem jeweiligen Outfit entfernt.
+     * 
+     * @param event zu behandelndes Event
+     * @auhtor Thomas Meese
+     */
+    public void behandleKleidungsstueckEntfernt(@ObservesAsync KleidungsstueckEntfernt event){
+        List<Outfit> outfits = this.gebeAlleOutfitsVomBenutzer(event.benutzername());
+        for(int index = 0; index < outfits.size(); index++){
+            for(int index2 = 0; index2 < outfits.get(index).getKleidungsstuecke().size(); index2++){
+                if(outfits.get(index).getKleidungsstuecke().get(index2) == event.klediungsId()){
+                    this.entferneKleidungsstueckVomOutfit(event.klediungsId(), outfits.get(index).getOutfitId(), event.benutzername());
+                }
+            }
+            
+        }
+    }
+
+
+    /**
+     * Die Methode behandelt das AlleKleidungstueckEntfernt-Event.
+     * Bei der Behandlung werden aus allen Outfits des Benutzers
+     * alle KleidungsstueckIds entfernt.
+     * 
+     * @param event zu behandelndes Event
+     * @auhtor Thomas Meese
+     */
+    public void behandleAlleKleidungsstueckeEntfernt(@ObservesAsync AlleKleidungsstueckeEntfernt event){
+        List<Outfit> outfits = this.gebeAlleOutfitsVomBenutzer(event.benutzername());
+        for(int index = 0; index < outfits.size(); index++){
+            this.entferneAlleKleidungsstueckeVomOutfit(outfits.get(index).getOutfitId(), event.benutzername());
+        }
     }
     
 }
