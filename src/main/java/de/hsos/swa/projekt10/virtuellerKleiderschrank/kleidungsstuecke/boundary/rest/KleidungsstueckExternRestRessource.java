@@ -37,7 +37,7 @@ public class KleidungsstueckExternRestRessource {
 
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    @RolesAllowed("benutzer")
+    //@RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Kleidungsstueck anhand der Artikelnummer und des Online Haendlers.",
         description = "Erstellt ein neues Kleidungsstueck anhand der Daten im DTO durch die Verwendung einer externen API des Online Haendlers."
@@ -52,7 +52,7 @@ public class KleidungsstueckExternRestRessource {
         }
     )
     public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Valid KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, "gustav"); // sc.getPrincipal().getName());
         return Response.status(Response.Status.OK).entity(kleidungsId).build();
     }
 }

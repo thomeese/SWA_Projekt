@@ -1,5 +1,6 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -12,13 +13,13 @@ public class KleidungsstueckInputDTO {
 
     @NotBlank(message="Groesse darf nicht leer sein")
     public String groesse;
-    @NotNull(message="Farbe darf nicht leer sein")
+    @NotNull(message="Farbe darf nicht leer sein und nur einer der gueltigen Farben enthalten")
     public Farbe farbe;
-    @NotNull(message="Typ darf nicht leer sein")
+    @NotNull(message="Typ darf nicht leer sein und nur einer der gueltigen Typen enthalten")
     public Typ typ;
     @NotBlank(message="HaendlerName darf nicht leer sein")
     public String name;
-    public List<String> kategorien;
+    public List<String> kategorien = new ArrayList<>();
     
     public KleidungsstueckInputDTO() {
     }

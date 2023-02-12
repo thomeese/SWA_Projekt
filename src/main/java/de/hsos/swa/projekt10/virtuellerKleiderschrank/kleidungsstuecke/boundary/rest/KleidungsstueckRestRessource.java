@@ -1,6 +1,7 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
@@ -13,6 +14,7 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -83,7 +85,7 @@ public class KleidungsstueckRestRessource {
     
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    @RolesAllowed("benutzer")
+    //@RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Kleidungsstueck.",
         description = "Erstellt ein neues Kleidungsstueck im Repository fuer den eingeloggten Benutzer mit den Daten aus dem DTO Objekt."
@@ -97,10 +99,10 @@ public class KleidungsstueckRestRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO) {
+    public Response erstelleNeuesKleidungsstueck(@Valid KleidungsstueckInputDTO kleidungsDTO) {
         //TODO eventuell erstelltes Objekt zurueckgeben
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, this.sc.getPrincipal().getName());
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, "gustav");//this.sc.getPrincipal().getName());
         kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
         return Response.status(Response.Status.CREATED).entity(kleidungsId).build();

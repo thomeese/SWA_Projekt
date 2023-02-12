@@ -1,4 +1,4 @@
-package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest;
+package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto;
 
 import javax.ws.rs.QueryParam;
 
