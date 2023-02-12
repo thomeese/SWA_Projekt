@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckFilter;
 
 
 public interface KleidungsstueckKatalog {
@@ -64,6 +65,8 @@ public interface KleidungsstueckKatalog {
      * @author Thomas Meese
      */
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(String benutzername);
+    
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(KleidungsstueckFilter filter, String benutzername);
     /**
      * Holt alle Kleidungsstuecke eines Typs fuer den Benutzer aus der Datenank.
      * Wenn keine Kleidungsstuecke gefunden werden, wird eine Leere Liste zurueck gegeben.

@@ -79,7 +79,7 @@ public class KleidungsstueckWebRessource {
     public TemplateInstance getAlleKleidungsstuecke(KleidungsstueckFilter filter) {
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, "gustav");//this.sc.getPrincipal().getName());
+        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, this.sc.getPrincipal().getName());
         List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = kleidungsstuecke.stream().map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck)).toList();
         kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");

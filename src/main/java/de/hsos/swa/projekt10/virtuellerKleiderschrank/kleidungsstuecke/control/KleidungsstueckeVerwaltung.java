@@ -24,7 +24,7 @@ public class KleidungsstueckeVerwaltung {
     private KleidungsstueckVonOnlineHaendler kOnlineHaendler;
 
     public List<Kleidungsstueck> holeAlleKleidungsstuecke(KleidungsstueckFilter filter, String benutzername) {
-        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
+        return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzer(filter,benutzername);
     }
 
     public Kleidungsstueck holeKleidungsstueckById(long kleidungsId, String benutzername) {

@@ -1,0 +1,34 @@
+<div style="display: table; padding-top: 1%; padding-bottom: 1%;">
+	<form action="/virtuellerkleiderschrank/v1/web/clothes" id="kleidungFilterForm" method="get">
+		<div class="md-3" style="display: table-cell;">
+			<label class="form-label">Name: </label>
+			<input name="name" type="text" class="form-control" id="name" placeholder="Name...">
+		</div>
+		<div class="md-3" style="display: table-cell;">
+			<label class="form-label">Kategorie: </label>
+			<input name="category" type="text" class="form-control" id="size" placeholder="Kategorie...">
+		</div>
+		<div class="md-3" style="display: table-cell;">
+			<label class="form-label">Typ: </label>
+			<select name="type" class="form-select" id="type">
+				<option disabled selected hidden>Wähle den Typ</option>
+				{#for typ in TypList:typen}
+				<option value="{typ}">{typ}</option>
+				{/for}
+			</select>
+		</div>
+		<div class="md-3" style="display: table-cell;">
+			<label class="form-label">Farbe: </label>
+			<select name="color" class="form-select" id="color">
+				<option disabled selected hidden>Wähle die Farbe</option>
+				{#for farbe in FarbList:farben}
+				<option value="{farbe}">{farbe}</option>
+				{/for}
+			</select>
+		</div>
+		<div class="md-3" style="display: table-cell;">
+			<button id="submitButton" type="submit" class="btn btn-primary" style="position: absolute; top: 16.53%; margin-left: 1px;">Filter
+				anwenden</button>
+		</div>
+	</form>
+</div>
