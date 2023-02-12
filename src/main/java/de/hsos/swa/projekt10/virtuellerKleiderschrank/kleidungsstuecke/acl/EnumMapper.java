@@ -1,12 +1,7 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.acl;
 
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import java.awt.Color;
 
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.FarbExtensions;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 
 public class EnumMapper {

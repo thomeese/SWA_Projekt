@@ -5,7 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckFilter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 
 
 public interface KleidungsstueckKatalog {

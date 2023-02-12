@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
@@ -20,7 +19,6 @@ import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
