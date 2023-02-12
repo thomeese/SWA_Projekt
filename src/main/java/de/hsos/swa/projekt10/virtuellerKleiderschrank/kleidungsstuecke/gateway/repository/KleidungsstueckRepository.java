@@ -20,6 +20,7 @@ import javax.enterprise.event.Event;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
@@ -27,11 +28,10 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import io.quarkus.arc.log.LoggerName;
 
 @Dependent
-public class KleidungsstueckRepository implements KleidungsstueckKatalog{
+public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @LoggerName("kl-repo")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckRepository.class);
-
 
     @Inject
     private EntityManager entityManager;
@@ -43,216 +43,315 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog{
     Event<AlleKleidungsstueckeEntfernt> alleKleidungsstueckEntferntEvent;
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - gestartet");
         Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
-        if(kleidungsstueck == null){
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
+        if (kleidungsstueck == null) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
             return false;
         }
-        try{
+        try {
             this.entityManager.remove(kleidungsstueck);
             this.kleidungsstueckEntferntEvent.fireAsync(new KleidungsstueckEntfernt(kleidungsId, benutzername));
-        }catch(IllegalArgumentException | TransactionRequiredException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
+        } catch (IllegalArgumentException | TransactionRequiredException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
             return false;
         }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
+        kleidungLog.trace(System.currentTimeMillis()
+                + ": loescheKleidungsstueckEinesBenutzers-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - beendet");
-        return true;    
+        return true;
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - gestartet");
+        kleidungLog
+                .debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - gestartet");
         List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(benutzername);
-        List<Long> kleidungsIds= new ArrayList<Long>(); // dient dem zwischenspeichern der Ids fuer den Fehlerfall
-        try{
-            for(int index = 0; index < zuLoeschen.size(); index++){
+        List<Long> kleidungsIds = new ArrayList<Long>(); // dient dem zwischenspeichern der Ids fuer den Fehlerfall
+        try {
+            for (int index = 0; index < zuLoeschen.size(); index++) {
                 Kleidungsstueck kleidung = zuLoeschen.get(index);
                 this.entityManager.remove(kleidung);
                 kleidungsIds.add(kleidung.getKleidungsId());
             }
-        }catch(IllegalArgumentException | TransactionRequiredException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet ohne das alle Kleidungsstuecke geloescht wurde");
-            //Wenn etwas beim Loeschen aller Kleidungsstueck schief geht muessen alle Kleidungsstuecke bei den Outfits
-            //entfernt werden, die geloescht werden konnten.
-            if(kleidungsIds.size() > 0){
-                for(int index = 0; index < zuLoeschen.size(); index++){
-                    this.kleidungsstueckEntferntEvent.fireAsync(new KleidungsstueckEntfernt(kleidungsIds.get(index), benutzername));
+        } catch (IllegalArgumentException | TransactionRequiredException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet ohne das alle Kleidungsstuecke geloescht wurde");
+            // Wenn etwas beim Loeschen aller Kleidungsstueck schief geht muessen alle
+            // Kleidungsstuecke bei den Outfits
+            // entfernt werden, die geloescht werden konnten.
+            if (kleidungsIds.size() > 0) {
+                for (int index = 0; index < zuLoeschen.size(); index++) {
+                    this.kleidungsstueckEntferntEvent
+                            .fireAsync(new KleidungsstueckEntfernt(kleidungsIds.get(index), benutzername));
                 }
             }
             return false;
         }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+        kleidungLog.trace(System.currentTimeMillis()
+                + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - beendet");
         this.alleKleidungsstueckEntferntEvent.fireAsync(new AlleKleidungsstueckeEntfernt(benutzername));
         return true;
     }
-    
+
     @Override
     public Kleidungsstueck gebeKleidungsstueckVomBenutzerMitId(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - gestartet");
-        try{
+        try {
             String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.kleidungsId = :kleidungsId";
-            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
-            query.setParameter("benutzername",benutzername);
-            query.setParameter("kleidungsId",kleidungsId);
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+            query.setParameter("kleidungsId", kleidungsId);
             Kleidungsstueck erg = query.getSingleResult();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - beendet");
             return erg;
-        }catch(IllegalStateException | PersistenceException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - beendet ohne das ein Kleidungsstueck gefunden wurde");
+        } catch (IllegalStateException | PersistenceException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeKleidungsstueckVomBenutzerMitId-Methode - holt ein Kleidungsstueck nach Id fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeKleidungsstueckVomBenutzerMitId-Methode - beendet ohne das ein Kleidungsstueck gefunden wurde");
             return null;
         }
-        
+
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinesTyp(Typ typ, String benutzername) {
-        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - gestartet");
-        try{
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - gestartet");
+        try {
             String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.typ = :typ";
-            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
-            query.setParameter("benutzername",benutzername);
-            query.setParameter("typ",typ);
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+            query.setParameter("typ", typ);
             List<Kleidungsstueck> kleidungsList = query.getResultList();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
+            kleidungLog.debug(
+                    System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet");
             return kleidungsList;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - holt alle Kleidungsstuecke eines Typs fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinesTyp-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
             return new ArrayList<Kleidungsstueck>();
         }
     }
 
-
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerMitNamen(String name, String benutzername) {
-        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - gestartet");
-        try{
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - gestartet");
+        try {
             String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.name = :name";
-            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
-            query.setParameter("benutzername",benutzername);
-            query.setParameter("name",name);
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+            query.setParameter("name", name);
             List<Kleidungsstueck> kleidungsList = query.getResultList();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet");
-        return kleidungsList;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(
+                    System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet");
+            return kleidungsList;
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - holt alle Kleidungsstuecke nach Namen/Marke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerMitNamen-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
             return new ArrayList<Kleidungsstueck>();
         }
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerFarbe(Farbe farbe, String benutzername) {
-        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - gestartet");
-        try{
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - gestartet");
+        try {
             String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername and k.farbe = :farbe";
-            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
-            query.setParameter("benutzername",benutzername);
-            query.setParameter("farbe",farbe);
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+            query.setParameter("farbe", farbe);
             List<Kleidungsstueck> kleidungsList = query.getResultList();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - holt alle Kleidungsstuecke einer Farbe fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - beendet");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - holt alle Kleidungsstuecke einer Farbe fuer einen Benutzer durch Repository");
+            kleidungLog.debug(
+                    System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - beendet");
             return kleidungsList;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - holt alle Kleidungsstuecke einer Farbe fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - holt alle Kleidungsstuecke einer Farbe fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerFarbe-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
             return new ArrayList<Kleidungsstueck>();
         }
     }
 
-
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
-    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerKategorie(String kategorie, String benutzername) {
-        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - gestartet");
-        TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery("select k from Kleidungsstueck k", Kleidungsstueck.class);
-        try{
+    @Transactional(value = TxType.REQUIRES_NEW)
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzerEinerKategorie(String kategorie,
+            String benutzername) {
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - gestartet");
+        TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery("select k from Kleidungsstueck k",
+                Kleidungsstueck.class);
+        try {
             List<Kleidungsstueck> kleidungsList = query.getResultList().stream().filter(kleidung -> {
-                return kleidung.getBenutzername().equals(benutzername) && kleidung.besitztKleidungsstueckKategorie(kategorie);
+                return kleidung.getBenutzername().equals(benutzername)
+                        && kleidung.besitztKleidungsstueckKategorie(kategorie);
             }).toList();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - holt alle Kleidungsstuecke einer Kategorie fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - beendet");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - holt alle Kleidungsstuecke einer Kategorie fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - beendet");
             return kleidungsList;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - holt alle Kleidungsstuecke einer Kategorie fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - holt alle Kleidungsstuecke einer Kategorie fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzerEinerKategorie-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
             return new ArrayList<Kleidungsstueck>();
         }
-        
+
     }
 
     @Override
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
-        try{
+        try {
             String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername";
-            TypedQuery<Kleidungsstueck> query= this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
             query.setParameter("benutzername", benutzername);
             List<Kleidungsstueck> kleidungsList = query.getResultList();
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
             kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet");
             return kleidungsList;
-        }catch(IllegalStateException | TransactionRequiredException | QueryTimeoutException e){
-            kleidungLog.trace(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
             return new ArrayList<Kleidungsstueck>();
         }
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(KleidungsstueckFilter filter,
+            String benutzername) {
+        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
+        kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
+        try {
+            String querryString = "select k from Kleidungsstueck k where k.benutzername = :benutzername";
+
+            if (filter.farbe != null && !filter.farbe.equals("")) {
+                querryString = querryString + " and k.farbe = :farbe";
+            }
+            if (filter.name != null && !filter.name.equals("")) {
+                querryString = querryString + " and k.name = :name";
+            }
+            if (filter.typ != null && !filter.typ.equals("")) {
+                querryString = querryString + " and k.typ = :typ";
+            }
+            /* 
+            if (filter.kategorie != null && !filter.kategorie.equals("")) {
+                querryString = querryString + " and k.kategorie = :kategorie";
+            }*/
+
+            TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
+            query.setParameter("benutzername", benutzername);
+
+            if (filter.farbe != null && !filter.farbe.equals("")) {
+                query.setParameter("farbe", filter.farbe);
+            }
+            if (filter.name != null && !filter.name.equals("")) {
+                query.setParameter("name", filter.name);
+            }
+            if (filter.typ != null && !filter.typ.equals("")) {
+                query.setParameter("typ", filter.typ);
+            }
+            List<Kleidungsstueck> kleidungsList;
+            if (filter.kategorie != null && !filter.kategorie.equals("")) {
+                kleidungsList= query.getResultList().stream().filter(kleidung -> {
+                    return kleidung.getBenutzername().equals(benutzername)
+                            && kleidung.besitztKleidungsstueckKategorie(filter.kategorie);
+                }).toList();
+            }else{
+                 kleidungsList = query.getResultList();
+            }
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet");
+            return kleidungsList;
+        } catch (IllegalStateException | TransactionRequiredException | QueryTimeoutException e) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - beendet ohne das Kleidungsstuecke gefunden wurden");
+            return new ArrayList<Kleidungsstueck>();
+        }
+
+    }
+
+    @Override
+    @Transactional(value = TxType.REQUIRES_NEW)
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - gestartet");
-        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.typ, dto.name, dto.kategorien, benutzername);
+        Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.typ, dto.name, dto.kategorien,
+                benutzername);
         this.entityManager.persist(kleidung);
-        kleidungLog.trace(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Repository");
+        kleidungLog.trace(System.currentTimeMillis()
+                + ": erstelleKleidungsstueckFuerBenutzer-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - beendet");
         return kleidung.getKleidungsId();
     }
 
     @Override
-    @Transactional(value=TxType.REQUIRES_NEW)
+    @Transactional(value = TxType.REQUIRES_NEW)
     public boolean bearbeiteKleidungsstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto,
             String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - gestartet");
         Kleidungsstueck kleidung = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
-        if(kleidung == null){
-            kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Repository");
-            kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
+        if (kleidung == null) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
             return false;
         }
-        if(dto.groesse != null){
+        if (dto.groesse != null) {
             kleidung.setGroesse(dto.groesse);
         }
-        if(dto.farbe != null){
+        if (dto.farbe != null) {
             kleidung.setFarbe(dto.farbe);
         }
-        if(dto.typ != null){
+        if (dto.typ != null) {
             kleidung.setTyp(dto.typ);
         }
         kleidung.setBenutzername(benutzername);
         kleidung.setKategorien(dto.kategorien);
         this.entityManager.persist(kleidung);
-        kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Repository");
+        kleidungLog.trace(System.currentTimeMillis()
+                + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers - beendet");
         return true;
     }
 
-    
 }
