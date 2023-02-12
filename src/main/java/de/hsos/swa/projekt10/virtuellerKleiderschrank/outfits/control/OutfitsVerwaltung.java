@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
@@ -15,8 +16,8 @@ public class OutfitsVerwaltung {
     @Inject
     private OutfitKatalog outfitKatalog;
 
-    public List<Outfit> holeAlleOutfits(String benutzername) {
-        return this.outfitKatalog.gebeAlleOutfitsVomBenutzer(benutzername);
+    public List<Outfit> holeAlleOutfits(OutfitFilter filter,String benutzername) {
+        return this.outfitKatalog.gebeAlleOutfitsVomBenutzer(filter ,benutzername);
     }
 
     public Outfit holeOutfitById(long outfitId, String benutzername) {
@@ -37,10 +38,6 @@ public class OutfitsVerwaltung {
 
     public boolean bearbeiteOutfit(long outfitId, OutfitInputDTO outfitInputDTO, String benutzername) {
         return this.outfitKatalog.bearbeiteOutfitEinesBenutzers(outfitInputDTO, outfitId, benutzername);
-    }
-
-    public List<Outfit> filterNachKategorie(String kategorie, String benutzername) {
-        return this.outfitKatalog.gebeAlleOutfitsVomBenutzerEinerKategorie(kategorie, benutzername);
     }
 }
 

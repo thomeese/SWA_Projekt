@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.acl.EnumMapper;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 
 public class KleidungsstueckHMDTO {

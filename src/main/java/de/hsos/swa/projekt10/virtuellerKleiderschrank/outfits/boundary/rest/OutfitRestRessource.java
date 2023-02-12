@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
@@ -62,10 +63,10 @@ public class OutfitRestRessource {
             )
         }
     )
-    public Response getAlleOutfits() {
+    public Response getAlleOutfits(OutfitFilter filter) {
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
-        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(this.sc.getPrincipal().getName())
+        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(filter,this.sc.getPrincipal().getName())
             .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
         outfitLog.trace(System.currentTimeMillis() + ": getAlleOutfits-Methode - gibt alle Outfit fuer einen Benutzer durch Rest-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");

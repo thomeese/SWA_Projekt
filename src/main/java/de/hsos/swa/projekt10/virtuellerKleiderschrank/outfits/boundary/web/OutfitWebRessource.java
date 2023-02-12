@@ -17,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
@@ -50,16 +51,17 @@ public class OutfitWebRessource {
 
 
     @GET
+    @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Outfits des eingeloggten Benutzers.",
         description = "Holt alle vom Benutzer erstellen Outfits aus seinem virtuellen Kleiderschrank."
     )
-    public TemplateInstance getAlleOutfits() {
+    public TemplateInstance getAlleOutfits(OutfitFilter filter) {
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
-        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(this.sc.getPrincipal().getName())
+        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(filter, this.sc.getPrincipal().getName())
             .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
         outfitLog.trace(System.currentTimeMillis() + ": getAlleOutfits-Methode - gibt alle Outfit fuer einen Benutzer durch Rest-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
