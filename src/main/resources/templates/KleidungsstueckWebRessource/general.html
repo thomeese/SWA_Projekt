@@ -1,8 +1,8 @@
 {#include main.html}
 {#title}Meine Kleidungsstücke{/title}
 {#content}
-{#include kleidungFilterForm}{/include}
-{#include kleidungsstueckAddModal.html}{/include}
+{#include Forms/kleidungFilterForm}{/include}
+{#include Modals/kleidungsstueckAddModal.html}{/include}
 <button type="button" class="btn btn-danger" onclick="loescheAlleItems('kleidung')">
 	Alle Kleidungsstuecke Löschen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
 		class="bi bi-trash3" viewBox="0 0 16 16">
@@ -21,8 +21,6 @@
 			</thead>
 			<tbody>
 				{#for kleidungsstueck in kleidungsstuecke}
-				
-				{#include kleidungsstueckInfoModal.html kleidungsstueck}{/include}
 				<tr>
 					<td><a href="/virtuellerkleiderschrank/v1/web/clothes/{kleidungsstueck.kleidungsId}"
 							class="list-group-item list-group-item-action" aria-current="true"
