@@ -11,7 +11,7 @@ public class KleidungsstueckVonOnlineHaendler {
     @Inject
     private HMApi hmApi;
 
-    public KleidungsstueckInputDTO holeKleidungsstueckVonHM(long artikelnummer, String groesse) {
+    public KleidungsstueckInputDTO holeKleidungsstueckVonHM(String artikelnummer, String groesse) {
         return hmApi.holeKleidungsstueckByArtikelnummer(artikelnummer, groesse);
     }
 }

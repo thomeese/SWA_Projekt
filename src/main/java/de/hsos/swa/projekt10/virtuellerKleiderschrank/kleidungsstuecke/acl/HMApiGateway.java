@@ -22,5 +22,5 @@ public interface HMApiGateway {
     @GET
     @Path("/products/detail")
     @Produces(MediaType.APPLICATION_JSON)
-    KleidungsstueckHMDTO getKleidungsstueckByArtikelnummer(@QueryParam("productcode") long artikelnummer);
+    KleidungsstueckHMDTO getKleidungsstueckByArtikelnummer(@QueryParam("productcode") String artikelnummer);
 }

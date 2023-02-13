@@ -8,8 +8,8 @@ public class KleidungsstueckExternInputDTO {
     @NotBlank(message="HaendlerName darf nicht leer sein")
     public String haendlerName;
 
-    @NotNull(message="Artikelnummer darf nicht leer sein")
-    public long artikelnummer;
+    @NotBlank(message="Artikelnummer darf nicht leer sein")
+    public String artikelnummer;
 
     public String groesse;
 

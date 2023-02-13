@@ -23,7 +23,7 @@ public class HMApi implements KleidungsstueckAPIProvider{
 
 
     @Override
-    public KleidungsstueckInputDTO holeKleidungsstueckByArtikelnummer(long artikelnummer, String groesse) {
+    public KleidungsstueckInputDTO holeKleidungsstueckByArtikelnummer(String artikelnummer, String groesse) {
         hmLog.debug(System.currentTimeMillis() + ": holeKleidungsstueckByArtikelnummer-Methode - gestartet");
         KleidungsstueckHMDTO kleidungsstueckHMDTO = hmApiGateway.getKleidungsstueckByArtikelnummer(artikelnummer);
         KleidungsstueckInputDTO kleidungsstueck = KleidungsstueckHMDTO.Converter.toKleidungsstueckInputDTO(kleidungsstueckHMDTO, groesse);

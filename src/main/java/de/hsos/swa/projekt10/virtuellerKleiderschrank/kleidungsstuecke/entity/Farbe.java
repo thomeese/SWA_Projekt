@@ -17,11 +17,11 @@ public enum Farbe {
     Rosa(Color.decode("#FFB6C1")),
     Rot(Color.RED),
     Schwarz(Color.BLACK),
-    Silber(Color.decode("#C0C0C0")),
+    //Silber(Color.decode("#C0C0C0")),
     Tuerkis(Color.decode("#40E0D0")),
     Weiss(Color.WHITE),
-    Hellgrau (Color.LIGHT_GRAY),
-    Antrazit(Color.decode("#293133"));
+    Hellgrau (Color.LIGHT_GRAY);
+    //Antrazit(Color.decode("#293133"));
 
     public final Color farbwert;
 
