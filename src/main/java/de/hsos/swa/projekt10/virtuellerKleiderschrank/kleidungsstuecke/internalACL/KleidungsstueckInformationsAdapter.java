@@ -10,8 +10,8 @@ public class KleidungsstueckInformationsAdapter implements KleidungsstueckInform
     @Inject
     public KleidungsstueckKatalog kKatalog;
     @Override
-    public KleidungsstueckInformationsDTO gebeKleidungsstueckInforamtionen(long kleidungsId, String benutzername) {
-        Kleidungsstueck kleidung = this.kKatalog.gebeKleidungsstueckVomBenutzerMitId(kleidungsId,benutzername);
+    public KleidungsstueckInformationsDTO gebeKleidungsstueckInforamtionen(long kleidungsId) {
+        Kleidungsstueck kleidung = this.kKatalog.gebeKleidungsstueckMitId(kleidungsId);
         if(kleidung == null){
             return null;
         }

@@ -4,6 +4,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
@@ -22,6 +23,7 @@ import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
 @Path("/api/outfits/shared/{id}")
+@ApplicationScoped
 public class OutfitShardIdRestRessource {
 
     @LoggerName("out-rest-shared-id-ressource")
@@ -48,7 +50,7 @@ public class OutfitShardIdRestRessource {
         OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeGeteiltesOutfit(outfitId));
         List<KleidungsstueckInformationsDTO> kleidungsstuecke = new ArrayList<KleidungsstueckInformationsDTO>();
         for(int index = 0; index < outfitDTO.kleidungsstuecke.size(); index++){
-            kleidungsstuecke.add(this.kInformation.gebeKleidungsstueckInforamtionen(outfitDTO.kleidungsstuecke.get(index), this.sc.getPrincipal().getName()));
+            kleidungsstuecke.add(this.kInformation.gebeKleidungsstueckInforamtionen(outfitDTO.kleidungsstuecke.get(index)));
         }
         outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt ein Outfit anhand der Id zurueck, sofern dieses als geteilt makiert ist");
         outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");

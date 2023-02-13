@@ -26,6 +26,12 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatal
 import io.quarkus.arc.log.LoggerName;
 
 @Dependent
+/**
+ * Repositorie fuer das Entity Outfit. 
+ * Enthaelt alle Methode die fuer die Interaktion mit
+ * dem Entity in Kombination mit der Datenbak benoetigt wird
+ * @author Thomas Meese
+ */
 public class OutfitRepository implements OutfitKatalog {
     @LoggerName("out-repo")
     private static Logger outfitLog = Logger.getLogger(OutfitRepository.class);
@@ -169,6 +175,15 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * Enternt alle Kleidungsstuecke aus einem Outfit eines Benutzers.
+     * Die Aenderung wird anschliessend in der Datenbank gespeichert.
+     * @param outfitId Id des Outfits dessen Kleidungsstuecke entfernt werden sollen
+     * @param benutzername Benutzer dessen Outfit bearbeitet werden soll
+     * @return boolean true bei erfolgt, false bei misserfolg
+     * 
+     * @author Thomas Meese
+     */
     public boolean entferneAlleKleidungsstueckeVomOutfit(long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": entferneAlleKleidungsstueckeVomOutfit-Methode - gestartet");
         Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
@@ -201,16 +216,16 @@ public class OutfitRepository implements OutfitKatalog {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
         try {
             String querryString = "select o from Outfit o where o.benutzername = :benutzername";
-            if (filter.name != null && filter.name.equals("")) {
+            if (filter.name != null && !filter.name.equals("")) {
                 querryString = querryString + " and o.name = :name";
             }
             TypedQuery<Outfit> query = this.entityManager.createQuery(querryString, Outfit.class);
             query.setParameter("benutzername", benutzername);
-            if (filter.name != null && filter.name.equals("")) {
+            if (filter.name != null && !filter.name.equals("")) {
                 query.setParameter("name", filter.name);
             }
             List<Outfit> outfits;
-            if (filter.kategorie != null && filter.kategorie.equals("")) {
+            if (filter.kategorie != null && !filter.kategorie.equals("")) {
                 outfits = query.getResultList().stream().filter(outfit -> {
                     return outfit.getBenutzername().equals(benutzername)
                             && outfit.besitztOutfitKategorie(filter.kategorie);
@@ -256,14 +271,25 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Override
-    @Transactional(value = TxType.REQUIRES_NEW)
     public Outfit gebeGeteilitesOutfit(long outfitId) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - gestartet");
-        Outfit outfit = this.entityManager.find(Outfit.class, outfitId);
-        outfitLog.trace(System.currentTimeMillis()
-                + ": gebeGeteilitesOutfit-Methode - holt ein geteiltes Outfit nach Id durch Repository");
-        outfitLog.debug(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - beendet");
-        return outfit;
+        try {
+            String querryString = "select o from Outfit o where o.outfitId = :outfitId and o.geteilt = :geteilt";
+            TypedQuery<Outfit> query = this.entityManager.createQuery(querryString, Outfit.class);
+            query.setParameter("outfitId", outfitId);
+            query.setParameter("geteilt", true);
+            Outfit outfit = query.getSingleResult();
+            outfitLog.trace(System.currentTimeMillis()
+                    + ": gebeGeteilitesOutfit-Methode - holt ein Outfit nach Id fuer einen Benutzer durch Repository");
+            outfitLog.debug(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - beendet");
+            return outfit;
+        } catch (IllegalStateException | PersistenceException e) {
+            outfitLog.trace(System.currentTimeMillis()
+                    + ": gebeGeteilitesOutfit-Methode - holt ein Outfit nach Id fuer einen Benutzer durch Repository");
+            outfitLog.debug(System.currentTimeMillis()
+                    + ": gebeGeteilitesOutfit-Methode - beendet ohne das ein Outfit gefunden wurde");
+            return null;
+        }
     }
 
     /**

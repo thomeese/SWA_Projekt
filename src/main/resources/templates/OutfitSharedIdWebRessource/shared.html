@@ -1,6 +1,38 @@
 {#include main}
 {#title}{/title}
 {#content}
-
+<div style="margin-top: 3%;">
+	<div class="card">
+		<div class="card-header">
+			{outfit.name}
+		</div>
+		<div class="card-body">
+			<h5 class="card-title">Status: </h5>
+			{#if outfit.istGeteilt}
+			<p class="card-text" style="text-align: left; margin-left: 2%;">Das Outfit ist geteilt</p>
+			{#else}
+			<p class="card-text" style="text-align: left; margin-left: 2%;">Das Outfit ist privat</p>
+			{/if}
+			<h5 class="card-title">Kleidungsstuecke: </h5>
+			<div class="list-group">
+                <ul class="list-group list-group-flush">
+					{#for kleidungsstueck in infos}
+					<li class="list-group-item list-group-item-action">
+						{kleidungsstueck.name}
+					</li>
+					{/for}
+				</ul>
+			</div>
+			<h5 class="card-title">Kategorien: </h5>
+			<div class="list-group" style="margin-left: 2%; margin-right: 25%; margin-top: 1%;">
+				<ul class="list-group list-group-flush">
+					{#for kategorie in outfit.kategorien}
+					<li class="list-group-item list-group-item-action">
+						{kategorie}
+					</li>
+					{/for}
+				</ul>
+			</div>
+		</div>
 {/content}
 {/include}

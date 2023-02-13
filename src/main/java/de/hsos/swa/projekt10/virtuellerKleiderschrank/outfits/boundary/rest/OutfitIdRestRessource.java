@@ -97,6 +97,35 @@ public class OutfitIdRestRessource {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
+    @DELETE
+    @Path("/{kleidungsId}")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
+    @Operation(
+        summary = "Entfernt ein Kleidungsstueck aus dem Outfit anhand der ID.",
+        description = "Entfernt ein zuvor vom eingeloggten Benutzer zu einem Outfit hinzugefuegtes Kleidungssteuck anhand der ID aus dem Repository."
+    )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+        }
+    )
+    public Response entferneKleidungsstueck(@PathParam("id") long outfitId,@PathParam("kleidungsId") long kleidungsId){
+        outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - gestartet");
+        if(this.outfitsVerwaltung.entferneKleidungsstueckVonOutfit(kleidungsId, outfitId, this.sc.getPrincipal().getName())){
+            outfitLog.trace(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - entfernt ein Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet");
+            return Response.status(Response.Status.OK).build();
+        }
+        outfitLog.trace(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - entfernt ein Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet ohne das ein Kleidugnsstueck entfernt wurde");
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
     @PATCH
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @RolesAllowed("benutzer")
@@ -142,9 +171,14 @@ public class OutfitIdRestRessource {
         }
     )
     public Response teileOutfit(@PathParam("id") long outfitId, OutfitTeilenDTO dto){
+        outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - gestartet");
         if(this.outfitsVerwaltung.teileOutfit(outfitId, dto, this.sc.getPrincipal().getName())){
+            outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - veroeffentlicht ein Outfit fuer einen Benutzer durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - beendet");
             return Response.status(Response.Status.OK).build();
         }
+        outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - veroeffentlicht ein Outfit fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - beendet ohne das ein Outfit oeffentlich geteilt wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }

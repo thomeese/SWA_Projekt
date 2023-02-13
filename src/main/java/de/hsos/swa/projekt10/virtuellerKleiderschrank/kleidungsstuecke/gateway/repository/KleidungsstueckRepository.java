@@ -229,4 +229,14 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
         return true;
     }
 
+    @Override
+    public Kleidungsstueck gebeKleidungsstueckMitId(long kleidungsId) {
+        kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckMitId-Methode - gestartet");
+        Kleidungsstueck outfit = this.entityManager.find(Kleidungsstueck.class, kleidungsId);
+        kleidungLog.trace(System.currentTimeMillis()
+                + ": gebeKleidungsstueckMitId-Methode - holt ein Kleidungsstueck anhand seiner Id durch Repository");
+                kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckMitId-Methode - beendet");
+        return outfit;
+    }
+
 }

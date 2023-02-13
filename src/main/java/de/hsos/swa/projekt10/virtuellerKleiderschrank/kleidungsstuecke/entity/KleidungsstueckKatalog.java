@@ -57,6 +57,16 @@ public interface KleidungsstueckKatalog {
      * @author Thomas Meese
      */
     public Kleidungsstueck gebeKleidungsstueckVomBenutzerMitId(long kleidungsId, String benutzername);
+
+    /**
+     * Holt ein Kleiddungstueck Anhand seiner Id aus der Datenbank.
+     * Wenn kein Kleidungsstueck gefunden wird, wird null zurueckgegeben.
+     * 
+     * @param kleidungsId Id des Kleidungsstuecks
+     * @return Kleidungssteuck gefundenes Kleidugnssteuck
+     * @author Thomas Meese
+     */
+    public Kleidungsstueck gebeKleidungsstueckMitId(long kleidungsId);
     /**
      * Holt die Kleidungsstuecke fuer den Benutzer aus der Datenank.
      * Das Ergebnis der Anfrage ist gefiltert. Es kann nach Name, Farbe, Typ und Kategorie

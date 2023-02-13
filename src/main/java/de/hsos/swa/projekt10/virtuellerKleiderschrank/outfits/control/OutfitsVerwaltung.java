@@ -45,6 +45,10 @@ public class OutfitsVerwaltung {
         return this.outfitKatalog.teileOutfitEinesBenutzers(outfitId, dto, benutzername);   
     }
 
+    public boolean entferneKleidungsstueckVonOutfit(long kleidungsId, long outfitId, String benutzername){
+        return this.outfitKatalog.entferneKleidungsstueckVomOutfit(kleidungsId, outfitId, benutzername);
+    }
+    
     public Outfit holeGeteiltesOutfit(long outfitId) {
         return this.outfitKatalog.gebeGeteilitesOutfit(outfitId);
     }
