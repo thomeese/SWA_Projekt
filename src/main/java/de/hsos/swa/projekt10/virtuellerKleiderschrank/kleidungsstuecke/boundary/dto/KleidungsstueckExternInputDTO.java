@@ -2,7 +2,6 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 
 import javax.validation.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
 public class KleidungsstueckExternInputDTO {
 
     @NotBlank(message="HaendlerName darf nicht leer sein")
@@ -14,5 +13,11 @@ public class KleidungsstueckExternInputDTO {
     public String groesse;
 
     public KleidungsstueckExternInputDTO(){
+    }
+
+    public KleidungsstueckExternInputDTO(String haendlerName, String artikelnummer, String groesse){
+        this.haendlerName = haendlerName;
+        this.artikelnummer = artikelnummer;
+        this.groesse = groesse;
     }
 }

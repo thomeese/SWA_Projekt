@@ -1,0 +1,61 @@
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKleidungsstueckModal">
+    Neues Kleidungsstueck erstellen
+</button>
+  
+<div class="modal modal-fade" id="addKleidungsstueckModal" tabindex="-1" aria-labelledby="addKleidungsstueckModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addModalLabel">Neues Kleidungsstueck erstellen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-left">
+                <button id="buttonManuellForm" type="button" class="btn btn-primary">Manuell</button>
+                <button id="buttonExternForm" type="button" class="btn btn-light">Extern</button>
+                <hr>
+                <div id="manuellFormDiv">
+                    {#include kleidungsstueckForm.html bearbeiten=false} {/include}
+                </div>
+                <div id="externFormDiv" hidden>
+                    {#include kleidungsstueckExternForm.html}{/include}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary">Kleidungsstueck erstellen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+let manuellButton = document.getElementById("buttonManuellForm");
+let externButton = document.getElementById("buttonExternForm");
+
+let manuellFormDiv = document.getElementById("manuellFormDiv");
+let externFormDiv = document.getElementById("externFormDiv");
+
+manuellButton.addEventListener("click", (e) => {
+    console.log("Manuelles Form anzeigen");
+    manuellFormDiv.removeAttribute("hidden");
+    externFormDiv.setAttribute("hidden", "");
+
+    externButton.classList.remove("btn-primary");
+    externButton.classList.add("btn-light");
+    manuellButton.classList.remove("btn-light");
+    manuellButton.classList.add("btn-primary");
+})
+
+externButton.addEventListener("click", (e) => {
+    console.log("Externes Form anzeigen");
+    externFormDiv.removeAttribute("hidden");
+    manuellFormDiv.setAttribute("hidden", "");
+
+    externButton.classList.remove("btn-light");
+    externButton.classList.add("btn-primary");
+    manuellButton.classList.remove("btn-primary");
+    manuellButton.classList.add("btn-light");
+})
+
+</script>
