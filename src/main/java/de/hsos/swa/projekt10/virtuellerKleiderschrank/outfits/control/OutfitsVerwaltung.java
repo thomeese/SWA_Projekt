@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 
@@ -38,6 +39,10 @@ public class OutfitsVerwaltung {
 
     public boolean bearbeiteOutfit(long outfitId, OutfitInputDTO outfitInputDTO, String benutzername) {
         return this.outfitKatalog.bearbeiteOutfitEinesBenutzers(outfitInputDTO, outfitId, benutzername);
+    }
+
+    public boolean teileOutfit(long outfitId, OutfitTeilenDTO dto, String benutzername){
+        return this.outfitKatalog.teileOutfitEinesBenutzers(outfitId, dto, benutzername);   
     }
 }
 

@@ -20,6 +20,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueck
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import io.quarkus.arc.log.LoggerName;
@@ -300,6 +301,18 @@ public class OutfitRepository implements OutfitKatalog {
         for (int index = 0; index < outfits.size(); index++) {
             this.entferneAlleKleidungsstueckeVomOutfit(outfits.get(index).getOutfitId(), event.benutzername());
         }
+    }
+
+    @Override
+    @Transactional(value = TxType.REQUIRES_NEW)
+    public boolean teileOutfitEinesBenutzers(long outfitId, OutfitTeilenDTO dto, String benutzername) {
+        Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
+        if(outfit == null){
+            return false;
+        }
+        outfit.setGeteilt(dto.teilen);
+        this.entityManager.persist(outfit);
+        return true;
     }
 
 }

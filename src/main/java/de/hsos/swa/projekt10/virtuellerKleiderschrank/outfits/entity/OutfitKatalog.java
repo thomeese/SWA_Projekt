@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 
 public interface OutfitKatalog {
     /**
@@ -102,4 +103,6 @@ public interface OutfitKatalog {
      * @return Outfit gefundenes Outfit
      */
     public Outfit gebeGeteilitesOutfit(long outfitId);
+
+    public boolean teileOutfitEinesBenutzers(long outfitId, OutfitTeilenDTO dto, String benutzername);
 }

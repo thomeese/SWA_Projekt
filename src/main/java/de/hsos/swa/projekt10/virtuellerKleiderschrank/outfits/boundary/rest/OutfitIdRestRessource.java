@@ -7,6 +7,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -22,6 +23,7 @@ import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -120,6 +122,29 @@ public class OutfitIdRestRessource {
         }
         outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Rest-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @PUT
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
+    @Operation(
+        summary = "Teilt das vorhandene Outfit.",
+        description = "Teiltt das vorhandene Outfit des eingeloogten Benutzers, sodass andere Verwender das Outfit einsehen koennen."
+    )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+        }
+    )
+    public Response teileOutfit(@PathParam("id") long outfitId, OutfitTeilenDTO dto){
+        if(this.outfitsVerwaltung.teileOutfit(outfitId, dto, this.sc.getPrincipal().getName())){
+            return Response.status(Response.Status.OK).build();
+        }
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }
