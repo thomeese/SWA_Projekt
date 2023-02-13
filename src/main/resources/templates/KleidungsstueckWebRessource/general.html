@@ -21,9 +21,12 @@
 			</thead>
 			<tbody>
 				{#for kleidungsstueck in kleidungsstuecke}
+				
+				{#include kleidungsstueckInfoModal.html kleidungsstueck}{/include}
 				<tr>
 					<td><a href="/virtuellerkleiderschrank/v1/web/clothes/{kleidungsstueck.kleidungsId}"
-							class="list-group-item list-group-item-action" aria-current="true">
+							class="list-group-item list-group-item-action" aria-current="true"
+							data-bs-toggle="modal" data-bs-target="#kleidungsstueckInfoModal">
 							{kleidungsstueck.name}
 						</a></td>
 					<td>

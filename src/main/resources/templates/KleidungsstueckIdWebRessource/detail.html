@@ -2,24 +2,6 @@
 {#include main}
 {#title}{kleidungsstueck.name}{/title}
 {#content}
-<!--
-<div class="card-body">
-	<h5 class="card-title">Größe: </h5>
-	<p class="card-text" style="text-align: left; margin-left: 2%;">{kleidungsstueck.groesse}</p>
-	<h5 class="card-title">Farbe: </h5>
-	<p class="card-text" style="text-align: left; margin-left: 2%;">{kleidungsstueck.farbe}</p>
-	<h5 class="card-title">Kategorien: </h5>
-	<div class="list-group" style="margin-left: 2%; margin-right: 25%; margin-top: 1%;">
-		<ul class="list-group list-group-flush">
-			{#for kategorie in kleidungsstueck.kategorien}
-			<li class="list-group-item list-group-item-action">
-				{kategorie}
-			</li>
-		</ul>
-		{/}
-	</div>
-</div>-->
-
 {#include kleidungsstueckForm.html bearbeiten=true kleidungsstueck}{/include}
 {/content}
 {/include}

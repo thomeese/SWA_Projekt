@@ -44,6 +44,10 @@ public class OutfitsVerwaltung {
     public boolean teileOutfit(long outfitId, OutfitTeilenDTO dto, String benutzername){
         return this.outfitKatalog.teileOutfitEinesBenutzers(outfitId, dto, benutzername);   
     }
+
+    public Outfit holeGeteiltesOutfit(long outfitId) {
+        return this.outfitKatalog.gebeGeteilitesOutfit(outfitId);
+    }
 }
 
 
