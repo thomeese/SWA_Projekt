@@ -16,6 +16,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
 import io.quarkus.arc.log.LoggerName;
@@ -30,12 +32,16 @@ public class KleidungsstueckExternWebRessource {
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
+    
+    @Inject
+    private DTOKonverter dtoKonverter;
 
     @Inject
     SecurityIdentity sc;
 
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Kleidungsstueck anhand der Artikelnummer und des Online Haendlers.",
@@ -50,7 +56,8 @@ public class KleidungsstueckExternWebRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueckMitExterneAPI(KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
+    public Response erstelleNeuesKleidungsstueckMitExterneAPI(KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
+        KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
         long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
         return Response.status(Response.Status.OK).entity(kleidungsId).build();
     }

@@ -6,7 +6,6 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Fa
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
 
 public class KleidungsstueckFormDTO {
-
     @FormParam("size")
     public String groesse;
     @FormParam("color")

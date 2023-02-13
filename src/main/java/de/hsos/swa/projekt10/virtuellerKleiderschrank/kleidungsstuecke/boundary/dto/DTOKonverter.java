@@ -17,4 +17,8 @@ public class DTOKonverter {
         KleidungsstueckOutputDTO kleidungsstueckDTO = new KleidungsstueckOutputDTO(kleidungsstueck.getKleidungsId(), kleidungsstueck.getGroesse(), kleidungsstueck.getFarbe(), kleidungsstueck.getTyp(), kleidungsstueck.getName(), kleidungsstueck.getKategorien());
         return kleidungsstueckDTO;
     }
+
+    public KleidungsstueckExternInputDTO konvert(KleidungsstueckExternFormDTO kleidungsstueckExternFormDTO) {
+        return new KleidungsstueckExternInputDTO(kleidungsstueckExternFormDTO.haendlerName, kleidungsstueckExternFormDTO.artikelnummer, kleidungsstueckExternFormDTO.groesse);
+    }
 }

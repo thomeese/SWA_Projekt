@@ -1,0 +1,18 @@
+<form action="/virtuellerkleiderschrank/v1/web/clothes/extern" id="kleidungsstueckExternForm" method="post">
+    <div class="mb-3">
+        <label for="name" class="form-label">Händler Name</label>
+        <input name="haendlerName" type="text" class="form-control" id="name" aria-describedby="nameHilfe">
+        <div id="nameHilfe" class="form-text">Gib den Händlernamen an, wo der Artikel gekauft wurde</div>
+    </div>
+    <div class="mb-3">
+        <label for="articlenumber" class="form-label">Artikelnummer</label>
+        <input name="articlenumber" type="text" class="form-control" id="articlenumber" aria-describedby="artikelnummerHilfe">
+        <div id="artikelnummerHilfe" class="form-text">Gib die eindeutige Artikelnummer des Kleidungsstueck ein</div>
+    </div>
+    <div class="mb-3">
+        <label for="inputGroesse" class="form-label">Größe</label>
+        <input name="size" type="text" class="form-control" id="size" aria-describedby="groesseHilfe">
+        <div id="groesseHilfe" class="form-text">Du kannst alle moeglichen Groessen eingeben</div>
+    </div>
+    <button id="submitButton" type="submit" class="btn btn-primary" >Kleidungsstueck erstellen</button>
+</form>

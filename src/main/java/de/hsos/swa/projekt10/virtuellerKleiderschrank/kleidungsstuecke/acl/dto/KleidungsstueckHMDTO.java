@@ -16,7 +16,7 @@ public class KleidungsstueckHMDTO {
             //TODO Mapper wegen Typ und Farbe benoetigt
             //return new KleidungsstueckInputDTO(kleidungsstueckHMDTO.product.color.text, kleidungsstueckHMDTO.product.productTypeName, kleidungsstueckHMDTO.product.name, new ArrayList<String>());
             
-            return new KleidungsstueckInputDTO(groesse, EnumFarbeMapper.gibNaehsteFarbe(kleidungsstueckHMDTO.product.color), EnumTypMapper.gibTypVonHmProduct(kleidungsstueckHMDTO.product), kleidungsstueckHMDTO.product.name, new ArrayList<String>());
+            return new KleidungsstueckInputDTO(groesse, EnumFarbeMapper.gibNaehsteFarbe(kleidungsstueckHMDTO.product.color), EnumTypMapper.gibTypVonHmProduct(kleidungsstueckHMDTO.product), "HM " + kleidungsstueckHMDTO.product.name, new ArrayList<String>());
         }
     }
 }
