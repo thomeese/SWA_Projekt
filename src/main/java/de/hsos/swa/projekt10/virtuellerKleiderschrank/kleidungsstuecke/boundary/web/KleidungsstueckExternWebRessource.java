@@ -7,8 +7,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -56,9 +58,9 @@ public class KleidungsstueckExternWebRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueckMitExterneAPI(KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
+    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo, KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
         KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
         long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
-        return Response.status(Response.Status.OK).entity(kleidungsId).build();
+        return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
     }
 }

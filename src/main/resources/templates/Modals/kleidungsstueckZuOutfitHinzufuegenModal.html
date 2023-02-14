@@ -21,8 +21,8 @@ kleidungsstueckTabelle
 
 
 
-var exampleModal = document.getElementById('addKleidungssteuckZuOutfitModal')
-exampleModal.addEventListener('show.bs.modal', function (event) {
+var addKleidungssteuckZuOutfitModal = document.getElementById('addKleidungssteuckZuOutfitModal')
+addKleidungssteuckZuOutfitModal.addEventListener('show.bs.modal', function (event) {
     $.ajax({    
                 type: "GET",
                 url: "http://localhost:8080/virtuellerkleiderschrank/v1/api/clothes",
