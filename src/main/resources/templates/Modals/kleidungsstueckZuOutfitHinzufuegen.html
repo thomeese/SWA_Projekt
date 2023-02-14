@@ -34,8 +34,9 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
                             kleidungssteuckLi.innerHTML = kleidungsstueck.name;
                             kleidungssteuckLi.classList.add("list-group-item");
                             kleidungssteuckLi.classList.add("list-group-item-info");
-                            kleidungssteuckLi.classList.add("kategorie-item");
+                            kleidungssteuckLi.classList.add("kleidungsstuek-item");
                             kleidungssteuckLi.classList.add("btn");
+                            kleidungssteuckLi.id = kleidungsstueck.kleidungsId;
                             kleidungsstueckList.appendChild(kleidungssteuckLi);
                         });
                     }             
