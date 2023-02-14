@@ -13,4 +13,16 @@ public class NutzerDTO {
     public String benutzername;
     @NotBlank
     public String passwort;
+
+    public NutzerDTO() {
+
+    }
+
+    public NutzerDTO(String vorname, String nachname, String email, String benutzername, String passwort) {
+        this.vorname = vorname;
+        this.nachname = nachname;
+        this.email = email;
+        this.benutzername = benutzername;
+        this.passwort = passwort;
+    }
 }

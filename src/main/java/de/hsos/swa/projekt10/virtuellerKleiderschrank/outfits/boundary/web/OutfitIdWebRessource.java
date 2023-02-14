@@ -11,8 +11,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -89,7 +91,7 @@ public class OutfitIdWebRessource {
             )
         }
     )
-    public Response bearbeiteOutfit(@PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
+    public Response bearbeiteOutfit(@Context UriInfo uriInfo, @PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
         if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
             outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
@@ -98,6 +100,6 @@ public class OutfitIdWebRessource {
         }
         outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        return Response.seeOther(uriInfo.getRequestUriBuilder().path("").build()).build();
     }
 }
