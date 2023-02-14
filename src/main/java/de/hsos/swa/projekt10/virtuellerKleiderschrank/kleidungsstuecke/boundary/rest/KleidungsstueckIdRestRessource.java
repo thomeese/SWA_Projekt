@@ -150,8 +150,8 @@ public class KleidungsstueckIdRestRessource {
             )
         }
     )
-    public Response fuegeKategorieHinzu(KategorieDTO kategorie){
-        if(this.kVerwaltung.fuegeKategorieHinzu(kategorie, this.sc.getPrincipal().getName())) {
+    public Response fuegeKategorieHinzu(@PathParam("id") long kleidungsId,KategorieDTO kategorie){
+        if(this.kVerwaltung.fuegeKategorieHinzu(kleidungsId,kategorie, this.sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         } else {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -175,8 +175,8 @@ public class KleidungsstueckIdRestRessource {
             )
         }
     )
-    public Response entferneKategorie(@PathParam("category") String kategorie){
-        if(this.kVerwaltung.entferneKategorie(kategorie, this.sc.getPrincipal().getName())) {
+    public Response entferneKategorie(@PathParam("id") long kleidungsId,@PathParam("category") String kategorie){
+        if(this.kVerwaltung.entferneKategorie(kleidungsId,kategorie, this.sc.getPrincipal().getName())) {
             return Response.status(Response.Status.OK).build();
         } else {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

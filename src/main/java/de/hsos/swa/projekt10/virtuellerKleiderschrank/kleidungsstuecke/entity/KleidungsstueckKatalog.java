@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KategorieDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 
 
@@ -79,5 +80,29 @@ public interface KleidungsstueckKatalog {
      * @author Thomas Meese
      */
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(KleidungsstueckFilter filter, String benutzername);
+
+    /**
+     * Fuegt einem Kleidungsstueck eines Benutzers eine Kategorie hinzu.
+     * Aenderung wird anschliessend in der Datenbank gespeichert.
+     * 
+     * @param kelidungsId Id des Kleidungsstuecks
+     * @param kategorie Kategorie die ergaenzt werden soll
+     * @param benutzername Benutzer zu dem das Kleidungsstueck gehoert
+     * @return boolean true bei erfolg, false bei misserfolg
+     * @author Thomas Meese
+     */
+    public boolean fuegeKleidungsstueckVomBenutzerKategorieHinzu(long kelidungsId, KategorieDTO kategorie, String benutzername);
+
+    /**
+     * Entfernt eine Kategorie aus einem Kleidungsstueck eines Benutzers.
+     * Aenderung wird anschliessend in der Datenbank gespeichert.
+     * 
+     * @param kelidungsId Id des Kleidungsstuecks
+     * @param kategorie Kategorie die ergaenzt werden soll
+     * @param benutzername Benutzer zu dem das Kleidungsstueck gehoert
+     * @return boolean true bei erfolg, false bei misserfolg
+     * @author Thomas Meese
+     */
+    public boolean entferneKategorieVonKleidungsstueckVomBenutzer(long kleidungsId, String kategorie, String benutzername);
 
 }  

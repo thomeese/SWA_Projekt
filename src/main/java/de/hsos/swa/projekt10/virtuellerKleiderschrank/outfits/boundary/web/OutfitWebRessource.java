@@ -83,7 +83,6 @@ public class OutfitWebRessource {
         long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
         outfitLog.trace(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - erstellt ein neues Outfit fuer einen Benutzer durch Rest-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
-        String uri = uriInfo.getRequestUriBuilder().path(String.valueOf(outfitId)).build().toString();
         return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(outfitId)).build()).build();
     }
 }

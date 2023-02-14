@@ -20,6 +20,7 @@ import javax.enterprise.event.Event;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.KleidungsstueckEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KategorieDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
@@ -73,7 +74,8 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
         kleidungLog
                 .debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - gestartet");
-        List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(new KleidungsstueckFilter(),benutzername);
+        List<Kleidungsstueck> zuLoeschen = this.gebeAlleKleidungsstueckeVomBenutzer(new KleidungsstueckFilter(),
+                benutzername);
         List<Long> kleidungsIds = new ArrayList<Long>(); // dient dem zwischenspeichern der Ids fuer den Fehlerfall
         try {
             for (int index = 0; index < zuLoeschen.size(); index++) {
@@ -127,7 +129,6 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     }
 
-
     @Override
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(KleidungsstueckFilter filter,
             String benutzername) {
@@ -145,10 +146,11 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
             if (filter.typ != null && !filter.typ.equals("")) {
                 querryString = querryString + " and k.typ = :typ";
             }
-            /* 
-            if (filter.kategorie != null && !filter.kategorie.equals("")) {
-                querryString = querryString + " and k.kategorie = :kategorie";
-            }*/
+            /*
+             * if (filter.kategorie != null && !filter.kategorie.equals("")) {
+             * querryString = querryString + " and k.kategorie = :kategorie";
+             * }
+             */
 
             TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
             query.setParameter("benutzername", benutzername);
@@ -164,12 +166,12 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
             }
             List<Kleidungsstueck> kleidungsList;
             if (filter.kategorie != null && !filter.kategorie.equals("")) {
-                kleidungsList= query.getResultList().stream().filter(kleidung -> {
+                kleidungsList = query.getResultList().stream().filter(kleidung -> {
                     return kleidung.getBenutzername().equals(benutzername)
                             && kleidung.besitztKleidungsstueckKategorie(filter.kategorie);
                 }).toList();
-            }else{
-                 kleidungsList = query.getResultList();
+            } else {
+                kleidungsList = query.getResultList();
             }
             kleidungLog.trace(System.currentTimeMillis()
                     + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - holt alle Kleidungsstuecke fuer einen Benutzer durch Repository");
@@ -235,8 +237,69 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
         Kleidungsstueck outfit = this.entityManager.find(Kleidungsstueck.class, kleidungsId);
         kleidungLog.trace(System.currentTimeMillis()
                 + ": gebeKleidungsstueckMitId-Methode - holt ein Kleidungsstueck anhand seiner Id durch Repository");
-                kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckMitId-Methode - beendet");
+        kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckMitId-Methode - beendet");
         return outfit;
+    }
+
+    @Override
+    public boolean fuegeKleidungsstueckVomBenutzerKategorieHinzu(long kleidungsId, KategorieDTO kategorie,
+            String benutzername) {
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - gestartet");
+        Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
+        if (kleidungsstueck == null) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - fuegt eine Kategorie dem Kleidungsstueck hinzu durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet ohne das eine Kategorie hinzugefuegt wurde");
+            return false;
+        }
+        try {
+            kleidungsstueck.getKategorien().add(kategorie.kategorieNamen);
+            this.entityManager.persist(kleidungsstueck);
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - fuegt eine Kategorie dem Kleidungsstueck hinzu durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet");
+            return true;
+        } catch (PersistenceException ex) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - fuegt eine Kategorie dem Kleidungsstueck hinzu durch Repository");
+            kleidungLog.debug(
+                    System.currentTimeMillis() + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean entferneKategorieVonKleidungsstueckVomBenutzer(long kleidungsId, String kategorie,
+            String benutzername) {
+        kleidungLog.debug(
+                System.currentTimeMillis() + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - gestartet");
+        Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
+        if (kleidungsstueck == null) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - entfernt eine Kategorie aus dem Kleidungsstueck durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet ohne das eine Kategorie entfernt wurde");
+            return false;
+        }
+        try {
+            kleidungsstueck.getKategorien().remove(kategorie);
+            this.entityManager.persist(kleidungsstueck);
+            kleidungLog.trace(System.currentTimeMillis()
+                        + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - entfernt eine Kategorie aus dem Kleidungsstueck durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet");
+            return true;
+        } catch (Exception ex) {
+            kleidungLog.trace(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - entfernt eine Kategorie aus dem Kleidungsstueck durch Repository");
+            kleidungLog.debug(System.currentTimeMillis()
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet ohne das eine Kategorie entfernt wurde");
+            return false;
+        }
+
     }
 
 }

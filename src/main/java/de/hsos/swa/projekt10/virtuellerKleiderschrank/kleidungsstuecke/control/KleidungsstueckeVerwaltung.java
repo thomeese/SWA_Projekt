@@ -58,13 +58,11 @@ public class KleidungsstueckeVerwaltung {
         return this.kKatalog.bearbeiteKleidungsstueckEinesBenutzers(kleidungsId, kleidungsstueckInputDTO, benutzername);
     }
 
-    public boolean fuegeKategorieHinzu(KategorieDTO kategorie, String benutzername) {
-        //TODO Katalog-Methode fuers adden von Kategorie implementieren
-        return false;
+    public boolean fuegeKategorieHinzu(long kleidungsId, KategorieDTO kategorie, String benutzername) {
+        return this.kKatalog.fuegeKleidungsstueckVomBenutzerKategorieHinzu(kleidungsId, kategorie, benutzername);
     }
 
-    public boolean entferneKategorie(String kategorie, String benutzername) {
-        //TODO Katalog-Methode fuers deleten von Kategorie implementieren
-        return false;
+    public boolean entferneKategorie(long kleidungsid, String kategorie, String benutzername) {
+        return this.kKatalog.entferneKategorieVonKleidungsstueckVomBenutzer(kleidungsid, kategorie, benutzername);
     }
 }
