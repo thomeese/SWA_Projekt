@@ -1,0 +1,51 @@
+<div class="modal modal-fade" id="addKleidungssteuckZuOutfitModal" tabindex="-1" aria-labelledby="addKleidungssteuckZuOutfitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Kleidungsstück hinzufügen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-left">
+                <ul id="kleidungsstueckList" class="list-group pe-2">
+                        <!--Kleidungsstuecke kommen hier rein-->
+                </ul>
+             </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let kleidungsstueckTabelle = document.getElementById("tableKleidungsstuecke");
+kleidungsstueckTabelle
+
+
+
+
+var exampleModal = document.getElementById('addKleidungssteuckZuOutfitModal')
+exampleModal.addEventListener('show.bs.modal', function (event) {
+    $.ajax({    
+                type: "GET",
+                url: "http://localhost:8080/virtuellerkleiderschrank/v1/api/clothes",
+                timeout: 3000,
+                success:function(response){
+                    if(Array.isArray(response)) {
+                        response.forEach((kleidungsstueck) => {
+                            let kleidungssteuckLi = document.createElement("li");
+                            kleidungssteuckLi.innerHTML = kleidungsstueck.name;
+                            kleidungssteuckLi.classList.add("list-group-item");
+                            kleidungssteuckLi.classList.add("list-group-item-info");
+                            kleidungssteuckLi.classList.add("kategorie-item");
+                            kleidungssteuckLi.classList.add("btn");
+                            kleidungsstueckList.appendChild(kleidungssteuckLi);
+                        });
+                    }             
+                },
+                error: function(){
+                    console.log("error!");
+                }
+            });
+
+});
+
+
+</script>

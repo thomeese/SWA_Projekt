@@ -7,6 +7,6 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class DTOKonverter {
     public OutfitInputDTO konvert(OutfitFormDTO outfitFormDTO){
-        return new OutfitInputDTO(outfitFormDTO.name, new ArrayList<>());
+        return new OutfitInputDTO(outfitFormDTO.name, new ArrayList<>(), new ArrayList<>());
     }
 }

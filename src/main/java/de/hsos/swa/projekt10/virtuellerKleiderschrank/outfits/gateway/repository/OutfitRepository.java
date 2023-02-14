@@ -68,11 +68,12 @@ public class OutfitRepository implements OutfitKatalog {
         }
         outfit.setBenutzername(benutzername);
         outfit.setKategorien(dto.kategorien);
+        outfit.setKleidungsstuecke(dto.kleidungsstuecke);
         this.entityManager.persist(outfit);
         outfitLog.trace(System.currentTimeMillis()
                 + ": bearbeiteOutfitEinesBenutzers-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Repository");
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfitEinesBenutzers-Methode - beendet");
-        return false;
+        return true;
     }
 
     @Override
