@@ -11,12 +11,15 @@ public class OutfitInputDTO {
     public String name;
     @NotNull(message="Es muss eine liste von Kategorien geben.")
     public List<String> kategorien;
+    @NotNull(message="Es muss eine liste von Kleidungsstuecken geben.")
+    public List<Long> kleidungsstuecke;
 
     public OutfitInputDTO(){
     }
 
-    public OutfitInputDTO(String name, List<String> kategorien) {
+    public OutfitInputDTO(String name, List<String> kategorien, List<Long> kleidungsstuecke) {
         this.name = name;
         this.kategorien = kategorien;
+        this.kleidungsstuecke = kleidungsstuecke;
     }
 }
