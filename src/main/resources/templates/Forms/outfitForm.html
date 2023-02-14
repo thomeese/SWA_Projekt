@@ -144,5 +144,20 @@ outfitForm.addEventListener("submit", (event) => {
     } else {
         outfitForm.submit();
     }
-})
+});
+const table = document.getElementById('tableKleidungsstuecke');
+		table.addEventListener('click', (event) => {
+			if (event.target.nodeName === 'BUTTON') {
+				let name = event.target.id;
+				url = window.location.pathname.toString().replace('/web', '/api') + '/' + name.toString().replace('btn', '');
+				if (confirm("Sicher das Sie das Kleidungsstück aus dem Outfit entfernen möchten?")) {
+					return fetch(url, {
+						method: 'DELETE',
+						headers: {
+							'Content-type': 'application/json'
+						}
+					});
+				}
+			}
+		});
 </script>
