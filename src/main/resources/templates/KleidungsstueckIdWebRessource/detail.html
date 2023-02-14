@@ -1,7 +1,12 @@
 {@de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO kleidungsstueck}
+{@java.lang.Boolean bearbeiten=true}
 {#include main.html}
 {#title}{kleidungsstueck.name}{/title}
 {#content}
-{#include Forms/kleidungsstueckForm.html bearbeiten=true kleidungsstueck}{/include}
+	<div class="card">
+		<div class="card-body">
+            {#include Forms/kleidungsstueckForm.html kleidungsstueck}{/include}
+        </div>
+    </div>
 {/content}
 {/include}

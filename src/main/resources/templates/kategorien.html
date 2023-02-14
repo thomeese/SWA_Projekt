@@ -1,0 +1,40 @@
+<div>
+    <label for="kategorien" class="form-label">Kategorien</label>
+    <ul id="kategorieList" class="list-group list-group-horizontal mb-2">
+        {#for kategorie in kategorien}
+        <li class="list-group-item list-group-item-info kategorie-item">{kategorie}</li>
+        {/for}
+    </ul>
+    <div class="{#if bearbeiten}bearbeiten-hidden{/if}">
+        <div class="row">
+            <div class="col-8">
+                <input name="kategorieNamen" type="text" class="form-control" placeholder="Kategorienamen..." id="kategorieNamen" aria-describedby="kategorieNamenHilfe">
+            </div>
+            <div class="col-4">
+                <button id="buttonAddKategorie" type="button" class="btn btn-outline-primary">Kategorie hinzufügen</button>
+            </div>
+        </div>
+        <div class="row">  
+            <div class="col"><div id="kategorieNamenHilfe" class="form-text">Eine Kategorie kann z.B. ein Anlass oder eine Jahreszeit sein.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+let buttonAddKategorie = document.getElementById("buttonAddKategorie");
+let kategorieList = document.getElementById("kategorieList");
+
+
+buttonAddKategorie.addEventListener("click", e => {
+    e.preventDefault();
+    let kategorieLi = document.createElement("li");
+    kategorieLi.innerHTML = document.getElementById("kategorieNamen").value;
+    kategorieLi.classList.add("list-group-item");
+    kategorieLi.classList.add("list-group-item-info");
+    kategorieLi.classList.add("kategorie-item");
+    kategorieList.appendChild(kategorieLi);
+});
+
+</script>

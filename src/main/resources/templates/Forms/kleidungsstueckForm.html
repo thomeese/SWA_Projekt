@@ -1,7 +1,7 @@
 <form action="/virtuellerkleiderschrank/v1/web/clothes" id="kleidungsstueckForm" class="{#if bearbeiten}update{#else}new{/if}" method="post">
 <div class="mb-3">
     <label for="name" class="form-label">Name</label>
-    <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" {#if bearbeiten}value="{kleidungsstueck.name}" disabled{/if}>
+    <input name="name" type="text" class="form-control" id="nameForm" aria-describedby="nameHilfe" {#if bearbeiten}value="{kleidungsstueck.name}" disabled{/if}>
     {#if !bearbeiten}<div id="nameHilfe" class="form-text">Gib deinem Kleidungsstueck einen eigenen Namen</div>{/if}
 </div>
 <div class="mb-3">
@@ -27,7 +27,14 @@
     {/for}
     </select>
 </div>
-<button id="submitButton" type="submit" class="btn btn-primary" {#if bearbeiten}hidden{/if}>{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
+{#if bearbeiten} 
+{#include kategorien.html kategorien=kleidungsstueck.kategorien} {/include}
+{/if}
+<div class="m-t-3">
+<hr>
+<button id="submitButton" type="submit" class="btn btn-primary {#if bearbeiten}bearbeiten-hidden{/if}">{#if bearbeiten}Änderungen speichern{#else}Kleidungsstueck erstellen{/if}</button>
+
+</div>
 </form>
 {#if bearbeiten} <button id="bearbeitenButton" class="btn btn-primary" onclick="">Kleidungsstueck bearbeiten</button>{/if}
 
@@ -38,17 +45,28 @@
 			  crossorigin="anonymous"></script>
 <script>
 
+var bearbeitenHiddenElements = document.getElementsByClassName("bearbeiten-hidden");
+
+Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
+    item.setAttribute("hidden", "");
+    });
+
 let bearbeitenButton = document.getElementById("bearbeitenButton");
 let kleidungsstueckForm = document.getElementById("kleidungsstueckForm");
-let nameElement = document.getElementById("name");
+let nameElement = document.getElementById("nameForm");
 let sizeElement = document.getElementById("size");
 let colorElement = document.getElementById("color");
-let color = colorElement.options[colorElement.selectedIndex].text;
+//colorElement.options[colorElement.selectedIndex].text;
 let typeElement = document.getElementById("type");
-let type = typeElement.options[typeElement.selectedIndex].text;
 
 if(bearbeitenButton) {
 bearbeitenButton.addEventListener("click", (event) => {
+
+Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
+    item.removeAttribute("hidden");
+    });
+
+
     bearbeitenButton.setAttribute("hidden", "");
     document.getElementById("submitButton").removeAttribute("hidden");
     nameElement.removeAttribute("disabled");
@@ -57,21 +75,45 @@ bearbeitenButton.addEventListener("click", (event) => {
     typeElement.removeAttribute("disabled");
 });
 }
- 
+
+function createJsonString() {
+    let jsonString = '{"name":"' + nameElement.value +'", "groesse":"' + sizeElement.value 
+        + '", "farbe":"' + colorElement.options[colorElement.selectedIndex].text + '", "typ":"' + typeElement.options[typeElement.selectedIndex].text + '", "kategorien":[';
+    var kategorienLi = document.getElementsByClassName("kategorie-item")
+    let ersteKategorie = true;
+    console.log(kategorienLi)
+
+    Array.prototype.forEach.call(kategorienLi, function(kategorie){
+        if(ersteKategorie === false) {
+            jsonString = jsonString + ',';
+        }else {
+            ersteKategorie = false;
+        }
+        jsonString = jsonString + '"' + kategorie.innerHTML + '"';
+    });
+    jsonString = jsonString + "]}"
+    console.log("jsonString: ", jsonString);
+    return jsonString;
+}
+
+kleidungsstueckForm.addEventListener("keypress", e => {
+    if(e.keyCode == 13) {
+        e.preventDefault();
+    }
+    }); 
+
+
 
 kleidungsstueckForm.addEventListener("submit", (event) => {
     event.preventDefault();
     if(kleidungsstueckForm.className === "update") {
+        console.log("Update kleidungsstueck");
         
-        let data = "name=" + nameElement.value + "&size=" + sizeElement.value + "&color=" + color + "&type=" + type;
-
-        console.log(data);
-        
-$.ajax({    
+        $.ajax({    
                 type: "PUT",
-                contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                contentType: "application/json",
                 url: window.location.pathname,
-                data: data,
+                data: createJsonString(),
                 timeout: 3000,
                 success:function(response){
                     console.log(response);              
@@ -80,8 +122,8 @@ $.ajax({
                     console.log("error!");
                 }
             });
-    } else {
-        kleidungsstueckForm.submit();
-    }
+        } else {
+            kleidungsstueckForm.submit();
+        }
 })
 </script>

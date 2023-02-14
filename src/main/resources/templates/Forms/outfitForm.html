@@ -1,28 +1,61 @@
 <form action="/virtuellerkleiderschrank/v1/web/outfits" id="outfitForm" class="{#if bearbeiten}update{#else}new{/if}" method="post">
 <div class="mb-3">
     <label for="name" class="form-label">Name</label>
-    <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
+    <input name="name" type="text" class="form-control" id="nameForm" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
     {#if !bearbeiten}<div id="nameHilfe" class="form-text">Wie soll dein Outfit heißen?</div>{/if}
 </div>
-<button {#if bearbeiten}hidden{/if} id="submitButton" type="submit" class="btn btn-primary">{#if bearbeiten}Änderungen speichern{#else}Outfit erstellen{/if}</button>
+{#if bearbeiten} 
+{#include kategorien.html kategorien=outfit.kategorien} {/include}
+{/if}
+<hr>
+<button  id="submitButton" type="submit" class="btn btn-primary {#if bearbeiten}bearbeiten-hidden{/if}">{#if bearbeiten}Änderungen speichern{#else}Outfit erstellen{/if}</button>
 </form>
 {#if bearbeiten}<button id="bearbeitenButton" class="btn btn-primary" onclick="">Outfit bearbeiten</button>{/if}
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
 <script>
+var bearbeitenHiddenElements = document.getElementsByClassName("bearbeiten-hidden");
+
+Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
+    item.setAttribute("hidden", "");
+    });
+
 let bearbeitenButton = document.getElementById("bearbeitenButton");
 let submitButton = document.getElementById("submitButton");
 
 let outfitForm = document.getElementById("outfitForm");
-let nameElement = document.getElementById("name");
+let nameElement = document.getElementById("nameForm");
 
 if(bearbeitenButton) {
 bearbeitenButton.addEventListener("click", () => {
+
+Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
+    item.removeAttribute("hidden", "");
+    });
+
     bearbeitenButton.setAttribute("hidden", "");
-    submitButton.removeAttribute("hidden");
     nameElement.removeAttribute("disabled");
 });
+}
+
+function createJsonString() {
+    let jsonString = '{"name":"' + nameElement.value +'", "kategorien":[';
+        var kategorienLi = document.getElementsByClassName("kategorie-item")
+        let ersteKategorie = true;
+        console.log(kategorienLi)
+
+        Array.prototype.forEach.call(kategorienLi, function(kategorie){
+            if(ersteKategorie === false) {
+                jsonString = jsonString + ',';
+            }else {
+                ersteKategorie = false;
+            }
+            jsonString = jsonString + '"' + kategorie.innerHTML + '"';
+        });
+        jsonString = jsonString + "]}"
+        console.log("jsonString: ", jsonString);
+        return jsonString;
 }
 
 outfitForm.addEventListener("submit", (event) => {
@@ -30,9 +63,9 @@ outfitForm.addEventListener("submit", (event) => {
     if(outfitForm.className === "update") {
         $.ajax({    
             type: "PUT",
-            contentType: "application/x-www-form-urlencoded;charset=utf-8",
+            contentType: "application/json",
             url: window.location.pathname,
-            data: name.value,
+            data: createJsonString(),
             timeout: 3000,
             success:function(response){
                 console.log(response);              

@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KategorieDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
@@ -18,6 +19,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
@@ -128,5 +130,56 @@ public class KleidungsstueckIdRestRessource {
         kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+
+    @POST
+    @Path("/category")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
+    @Operation(
+        summary = "Fuegt eine neue Kategorie zu dem Kleidungsstueck hinzu.",
+        description = "Fuegt eine neue Kategorie zu dem Kleidungsstueck hinzu, wenn diese die Kategorie noch nicht besitzt."
+    )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+        }
+    )
+    public Response fuegeKategorieHinzu(KategorieDTO kategorie){
+        if(this.kVerwaltung.fuegeKategorieHinzu(kategorie, this.sc.getPrincipal().getName())) {
+            return Response.status(Response.Status.OK).build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DELETE
+    @Path("/category/{category}")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
+    @Operation(
+        summary = "Loescht eine Kategorie zu dem Kleidungsstueck anhand des Namens.",
+        description = "Loescht eine Kategorie zu dem Kleidungsstueck, wenn das Kleidungsstueck eine Kategorie mit dem Namen besitzt."
+    )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+        }
+    )
+    public Response entferneKategorie(@PathParam("category") String kategorie){
+        if(this.kVerwaltung.entferneKategorie(kategorie, this.sc.getPrincipal().getName())) {
+            return Response.status(Response.Status.OK).build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

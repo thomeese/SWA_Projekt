@@ -2,19 +2,13 @@
 {#title}{/title}
 {#content}
 <div style="margin-top: 3%;">
-	{#include Forms/outfitForm.html bearbeiten=true outfit}{/include}
-	<button type="button" id="teileButton" class="btn btn-success">Outfit teilen</button>
+	
 	<div class="card">
-		<div class="card-header">
-			{outfit.name}
-		</div>
 		<div class="card-body">
-			<h5 class="card-title">Status: </h5>
-			{#if outfit.istGeteilt}
-			<p class="card-text" style="text-align: left; margin-left: 2%;">Das Outfit ist geteilt</p>
-			{#else}
-			<p class="card-text" style="text-align: left; margin-left: 2%;">Das Outfit ist privat</p>
-			{/if}
+			{#include Forms/outfitForm.html bearbeiten=true outfit}{/include}
+	<button type="button" id="teileButton" class="btn btn-success">Outfit teilen</button>
+			
+			
 			<h5 class="card-title">Kleidungsstuecke: </h5>
 			<div class="table reposive" id = table>
 				<table class="table table-bordered border-dark">
