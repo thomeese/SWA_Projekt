@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
 
@@ -24,6 +25,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest.OutfitIdRestRessource;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 
+import java.util.ArrayList;
 import java.util.List;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.qute.CheckedTemplate;
@@ -53,6 +55,9 @@ public class OutfitWebRessource {
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @Fallback(
+        fallbackMethod = "fallbackGetAlleOutfits"
+    )
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Outfits des eingeloggten Benutzers.",
@@ -67,6 +72,10 @@ public class OutfitWebRessource {
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
         
         return Templates.general(outfitDTOs);
+    }
+
+    public TemplateInstance fallbackGetAlleOutfits(OutfitFilter filter){
+        return Templates.general(new ArrayList<OutfitOutputDTO>());
     }
 
     @POST

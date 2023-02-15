@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.events.AlleKleidungsstueckeEntfernt;
@@ -213,6 +214,7 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Override
+    @Timeout(value = 250)
     public List<Outfit> gebeAlleOutfitsVomBenutzer(OutfitFilter filter, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
         try {

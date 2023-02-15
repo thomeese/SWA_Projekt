@@ -10,7 +10,7 @@ import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 import shared.RessourceUriBuilder;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -24,11 +24,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -66,6 +66,9 @@ public class KleidungsstueckRestRessource {
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @Fallback(
+        fallbackMethod = "fallbackGetAlleKleidungsstuecke"
+    )
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Kleidungsstuecke des eingeloggten Benutzers.",
@@ -93,6 +96,9 @@ public class KleidungsstueckRestRessource {
         return Response.status(Response.Status.OK).entity(kleidungsstueckDTOs).build();
     }
 
+    public Response fallbackGetAlleKleidungsstuecke(KleidungsstueckFilter filter) {
+        return Response.status(Response.Status.OK).entity(new ArrayList<KleidungsstueckOutputDTO>()).build();
+    }
     
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)

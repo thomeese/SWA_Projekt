@@ -10,13 +10,13 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kl
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -62,6 +63,9 @@ public class KleidungsstueckWebRessource {
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @Fallback(
+        fallbackMethod = "fallbackGetAlleKleidungsstuecke"
+    )
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Kleidungsstuecke des eingeloggten Benutzers.",
@@ -87,7 +91,9 @@ public class KleidungsstueckWebRessource {
         return Templates.general(kleidungsstueckDTOs);
     }
 
-    
+    public TemplateInstance fallbackGetAlleKleidungsstuecke(KleidungsstueckFilter filter) {
+        return Templates.general(new ArrayList<KleidungsstueckOutputDTO>());
+    }
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)

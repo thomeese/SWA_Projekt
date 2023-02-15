@@ -51,8 +51,6 @@ public class BenutzerGateway implements Benutzerverwaltung{
         }catch(Exception exception){
             return false;
         }
-        
-       
     }
     
 }

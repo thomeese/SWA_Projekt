@@ -1,5 +1,6 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -14,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -47,6 +49,9 @@ public class OutfitRestRessource {
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @Fallback(
+        fallbackMethod = "fallbackGetAlleOutfits"
+    )
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Outfits des eingeloggten Benutzers.",
@@ -72,6 +77,10 @@ public class OutfitRestRessource {
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
         
         return Response.status(Response.Status.OK).entity(outfitDTOs).build();
+    }
+
+    public Response fallbackGetAlleOutfits(OutfitFilter filter){
+        return Response.status(Response.Status.OK).entity(new ArrayList<OutfitOutputDTO>()).build();
     }
 
     @POST
