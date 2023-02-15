@@ -116,7 +116,7 @@ kleidungsstueckForm.addEventListener("submit", (event) => {
                 data: createJsonString(),
                 timeout: 3000,
                 success:function(response){
-                    console.log(response);              
+                    window.location.reload();           
                 },
                 error: function(){
                     console.log("error!");

@@ -3,6 +3,8 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
@@ -10,8 +12,10 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
+import shared.RessourceUriBuilder;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -22,6 +26,7 @@ import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -29,6 +34,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.jboss.logging.Logger;
+
+import java.net.URI;
 
 @Path("/api/clothes/{id}")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -42,6 +49,12 @@ public class KleidungsstueckIdRestRessource {
 
     @Inject
     private DTOKonverter dtoKonverter;
+
+    @Inject
+    RessourceUriBuilder uriBuilder;
+
+    @Context
+    UriInfo uriInfo;
 
     @Inject
     SecurityIdentity sc;
@@ -68,7 +81,10 @@ public class KleidungsstueckIdRestRessource {
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
+        Kleidungsstueck kleidungsstueck = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName());
+        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(kleidungsstueck);
+        this.addLinksZuKleidungsstueckOutputDTO(kleidungsstueckDTO);
+        
         kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
         return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
@@ -181,5 +197,48 @@ public class KleidungsstueckIdRestRessource {
         } else {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    //HATEOS Links erstellen und adden
+
+    private void addLinksZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
+        this.addSelfLinkZuKleidungsstueckOutputDTO(kleidungsstueckOutputDTO);
+        this.addCollectionZuKleidungsstueckOutputDTO(kleidungsstueckOutputDTO);
+        this.addKategorieZuKleidungsstueckOutputDTO(kleidungsstueckOutputDTO);
+    }
+
+    private void addSelfLinkZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
+        URI selfUri = this.uriBuilder.fuerKleidungsstueck(kleidungsstueckOutputDTO.kleidungsId, this.uriInfo);
+        Link link = Link.fromUri(selfUri)
+                        .rel("self")
+                        .type(MediaType.APPLICATION_JSON)
+                        .param("get kleidungsstueck", "GET")
+                        .param("change kleidungsstueck", "PATCH")
+                        .param("delete kleidungsstueck", "DELETE")
+                        .build();
+        kleidungsstueckOutputDTO.addLink("self", link);
+    }
+
+    private void addCollectionZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
+        URI collectionUri = this.uriBuilder.fuerKleidungsstuecke(this.uriInfo);
+        Link link = Link.fromUri(collectionUri)
+                        .rel("collection")
+                        .type(MediaType.APPLICATION_JSON)
+                        .param("get alle kleidungsstuecke", "GET")
+                        .param("add kleidungsstueck", "POST")
+                        .param("delete alle kleidungsstuecke", "DELETE")
+                        .build();
+        kleidungsstueckOutputDTO.addLink("collection", link);
+    }
+
+    private void addKategorieZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
+        URI addCategory = this.uriBuilder.fuerKategorieKleidungsstueck(kleidungsstueckOutputDTO.kleidungsId, "fuegeKategorieHinzu", uriInfo);
+        Link link = Link.fromUri(addCategory)
+                        .rel("kategorie")
+                        .type(MediaType.APPLICATION_JSON)
+                        .param("add kategorie", "POST")
+                        .param("delete kategorie mit Namen", "DELETE")
+                        .build();
+        kleidungsstueckOutputDTO.addLink("kategorie", link);
     }
 }

@@ -116,34 +116,4 @@ public class KleidungsstueckWebRessource {
         
         return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
     }
-
-    @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_HTML)
-    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    @RolesAllowed("benutzer")
-    @Operation(
-        summary = "Loescht alle vorhandenen Kleidungsstuecke aus dem Virtuellen Kleiderschrank.",
-        description = "Loescht alle zuvor vom eingeloggten Benutzer erstellten Kleidungsstuecke aus dem Repository."
-    )
-    @APIResponses(
-        value = {
-            @APIResponse(
-                responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.TEXT_HTML)
-            )
-        }
-    )
-    public TemplateInstance loescheAlleKleidungsstuecke() {
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - gestartet");
-        if(this.kVerwaltung.loescheAlleKleidungsstuecke(this.sc.getPrincipal().getName())) {
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - beendet");
-            return Templates.general(null);
-        }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
-        return Templates.general(null);
-    }
 }

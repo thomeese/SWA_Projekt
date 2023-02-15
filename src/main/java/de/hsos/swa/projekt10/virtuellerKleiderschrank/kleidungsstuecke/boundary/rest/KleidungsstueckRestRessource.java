@@ -8,7 +8,9 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.K
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
+import shared.RessourceUriBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -21,8 +23,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -51,6 +56,13 @@ public class KleidungsstueckRestRessource {
 
     @Inject
     SecurityIdentity sc;
+
+    @Inject
+    RessourceUriBuilder uriBuilder;
+
+    @Context
+    UriInfo uriInfo;
+
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)

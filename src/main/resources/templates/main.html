@@ -29,7 +29,7 @@
             }
         }
         function loescheAlleItems(type){
-            if (confirm('Sicher das Sie alle Objekt löschen möchten')) {
+            if (confirm('Sicher das Sie alle Objekte löschen möchten')) {
                 if (type === 'kleidung') {
                     return fetch('http://localhost:8080/virtuellerkleiderschrank/v1/api/clothes/', {
                         method: 'Delete',

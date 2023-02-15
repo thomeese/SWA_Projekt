@@ -96,10 +96,10 @@ public class OutfitIdWebRessource {
         if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
             outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
             outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
-            return Response.status(Response.Status.RESET_CONTENT).build();
+            return Response.status(Response.Status.OK).build();
         }
         outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
-        return Response.seeOther(uriInfo.getRequestUriBuilder().path("").build()).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }
