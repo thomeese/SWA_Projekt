@@ -81,11 +81,12 @@ public class KleidungsstueckIdRestRessource {
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        Kleidungsstueck kleidungsstueck = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName());
+        Kleidungsstueck kleidungsstueck = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, 
+                                                                                    sc.getPrincipal().getName());
         KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(kleidungsstueck);
         this.addLinksZuKleidungsstueckOutputDTO(kleidungsstueckDTO);
         
-        kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
+        kleidungLog.trace(System.currentTimeMillis()+ ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
         return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
     }

@@ -44,9 +44,9 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Kleidungsstuecke")
-public class KleidungsstueckRestRessource {
+public class KleidungsstueckeRestRessource {
     @LoggerName("kl-rest-ressource")
-    private static Logger kleidungLog = Logger.getLogger(KleidungsstueckRestRessource.class);
+    private static Logger kleidungLog = Logger.getLogger(KleidungsstueckeRestRessource.class);
 
     @Inject
     private KleidungsstueckeVerwaltung kVerwaltung;
@@ -72,15 +72,14 @@ public class KleidungsstueckRestRessource {
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Kleidungsstuecke des eingeloggten Benutzers.",
-        description = "Holt alle vom Benutzer erstellen Kleidungsstuecke aus seinem virtuellen Kleiderschrank."
+        description = "Holt alle vom Benutzer erstellten Kleidungsstuecke aus seinem virtuellen Kleiderschrank."
     )
     @APIResponses(
         value = {
             @APIResponse(
                 responseCode = "200",
                 description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                                    schema = @Schema(type= SchemaType.ARRAY,
+                content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type= SchemaType.ARRAY,
                                                     implementation = KleidungsstueckOutputDTO.class))
             )
         }
@@ -102,7 +101,7 @@ public class KleidungsstueckRestRessource {
     
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    //@RolesAllowed("benutzer")
+    @RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Kleidungsstueck.",
         description = "Erstellt ein neues Kleidungsstueck im Repository fuer den eingeloggten Benutzer mit den Daten aus dem DTO Objekt."
@@ -119,7 +118,7 @@ public class KleidungsstueckRestRessource {
     public Response erstelleNeuesKleidungsstueck(@Valid KleidungsstueckInputDTO kleidungsDTO) {
         //TODO eventuell erstelltes Objekt zurueckgeben
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, "gustav");//this.sc.getPrincipal().getName());
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, this.sc.getPrincipal().getName());
         kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
         return Response.status(Response.Status.CREATED).entity(kleidungsId).build();

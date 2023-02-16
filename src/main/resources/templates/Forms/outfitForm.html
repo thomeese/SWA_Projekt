@@ -1,4 +1,4 @@
-<form action="/virtuellerkleiderschrank/v1/web/outfits" id="outfitForm" class="{#if bearbeiten}update{#else}new{/if}" method="post">
+<form action="/virtuellerkleiderschrank/v1/web/outfits" id="outfitForm" class="{#if bearbeiten}update{#else}new{/if}" method="PUT">
 <div class="mb-3">
     <label for="name" class="form-label">Name</label>
     <input name="name" type="text" class="form-control" id="nameForm" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
@@ -19,7 +19,7 @@
 				<table class="table table-bordered border-dark" id="tableKleidungsstuecke">
 					<thead>
 						<tr>
-							<th scope="col-1">Name des Kleidungssuecks</th>
+							<th scope="col-1">Name des Kleidungsstücks</th>
 							<th class="{#if bearbeiten}bearbeiten-hidden{/if}" scope="col-sm-1">Aktionen</th>
 						</tr>
 					</thead>

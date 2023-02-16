@@ -58,7 +58,7 @@ public class KleidungsstueckExternWebRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo, KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
+    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo,KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
         KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
         long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
         return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();

@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.UriInfo;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckIdRestRessource;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckRestRessource;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest.KleidungsstueckeRestRessource;
 
 @ApplicationScoped
 public class RessourceUriBuilder {
@@ -16,7 +16,7 @@ public class RessourceUriBuilder {
     }
 
     public URI fuerKleidungsstuecke(UriInfo uriInfo) {
-        return erstelleRessourceUri(KleidungsstueckRestRessource.class, uriInfo);
+        return erstelleRessourceUri(KleidungsstueckeRestRessource.class, uriInfo);
     }
     
     public URI fuerKategorieKleidungsstueck(long kleidungsId, String methode, UriInfo uriInfo) {
