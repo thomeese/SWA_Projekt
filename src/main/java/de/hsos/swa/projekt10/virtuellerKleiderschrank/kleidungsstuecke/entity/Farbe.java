@@ -21,7 +21,8 @@ public enum Farbe {
     Tuerkis(Color.decode("#40E0D0")),
     Weiss(Color.WHITE),
     Hellgrau (Color.LIGHT_GRAY),
-    Antrazit(Color.decode("#293133"));
+    Antrazit(Color.decode("#293133")),
+    Unbekannt(null);
 
     public final Color farbwert;
 

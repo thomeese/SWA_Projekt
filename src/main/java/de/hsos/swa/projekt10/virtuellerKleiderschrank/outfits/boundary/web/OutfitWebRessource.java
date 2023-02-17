@@ -63,6 +63,12 @@ public class OutfitWebRessource {
         summary = "Holt alle Outfits des eingeloggten Benutzers.",
         description = "Holt alle vom Benutzer erstellen Outfits aus seinem virtuellen Kleiderschrank."
     )
+    /**
+     * 
+     * @param filter
+     * @return
+     * @author Thomas Meese
+     */
     public TemplateInstance getAlleOutfits(OutfitFilter filter) {
         outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
         //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs

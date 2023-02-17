@@ -64,6 +64,12 @@ public class OutfitIdWebRessource {
         summary = "Holt ein einzelnes Outfit anhand der ID.",
         description = "Holt ein einzelnes Outfit anhand der ID, welches der eingeloggte Benutzer erstellt hat."
     )
+    /**
+     * 
+     * @param outfitId
+     * @return
+     * @author Thomas Meese
+     */
     public TemplateInstance getOutfit(@PathParam("id") long outfitId) {
         outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
         OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, this.sc.getPrincipal().getName()));
@@ -142,7 +148,7 @@ public class OutfitIdWebRessource {
             outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - für das Outfit mit der ID " + outfitId + " beendet ohne das der Teile-Status des Outfits veraendert wurde.");
             return Response.status(Response.Status.CONFLICT).build();
         } catch(Exception ex) {
-            outfitLog.warn(System.currentTimeMillis() + ": Beim Teilen des Outfits mit der ID " + outfitId + " ist ein Fehler aufgetreten: " + ex.getMessage());
+            outfitLog.error(System.currentTimeMillis() + ": Beim Teilen des Outfits mit der ID " + outfitId + " ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
@@ -34,7 +33,7 @@ class OutfitRestRessourceTest {
 
     @Test
     void erstelleOutfit(){
-        OutfitInputDTO dto = new OutfitInputDTO("test", new ArrayList<String>(), new ArrayList<Long>());
+        OutfitInputDTO dto = new OutfitInputDTO("test", new ArrayList<String>(), new ArrayList<Long>(), false);
         given()
         .auth()
         .oauth2(this.service.gebeAccessToken("testbenutzer", "test"))

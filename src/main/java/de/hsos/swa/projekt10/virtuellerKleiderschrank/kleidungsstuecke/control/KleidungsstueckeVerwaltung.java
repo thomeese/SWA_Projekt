@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions.ExterneAPIException;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.acl.KleidungsstueckVonOnlineHaendler;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KategorieDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
@@ -34,7 +35,7 @@ public class KleidungsstueckeVerwaltung {
         return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsDTO, benutzername);
     }
 
-    public long erstelleKleidungsstueckMitExterneApi(KleidungsstueckExternInputDTO kleidungsExternDTO, String benutzername) {
+    public long erstelleKleidungsstueckMitExterneApi(KleidungsstueckExternInputDTO kleidungsExternDTO, String benutzername) throws ExterneAPIException{
         KleidungsstueckInputDTO kleidungsstueckInputDTO;
         switch(kleidungsExternDTO.haendlerName) {
             case "hm":
