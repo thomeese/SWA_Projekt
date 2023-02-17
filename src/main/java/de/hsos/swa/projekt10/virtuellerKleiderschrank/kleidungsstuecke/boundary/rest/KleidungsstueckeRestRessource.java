@@ -3,6 +3,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckListeOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
@@ -10,6 +11,7 @@ import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 import shared.RessourceUriBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -72,27 +75,43 @@ public class KleidungsstueckeRestRessource {
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Kleidungsstuecke des eingeloggten Benutzers.",
-        description = "Holt alle vom Benutzer erstellten Kleidungsstuecke aus seinem virtuellen Kleiderschrank."
+        description = "Holt alle vom Benutzer erstellten Kleidungsstuecke aus seinem virtuellen Kleiderschrank mit den gesetzen Filtern."
     )
     @APIResponses(
         value = {
             @APIResponse(
                 responseCode = "200",
                 description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type= SchemaType.ARRAY,
-                                                    implementation = KleidungsstueckOutputDTO.class))
+                content = @Content(mediaType = MediaType.APPLICATION_JSON, 
+                        schema = @Schema(type= SchemaType.ARRAY,
+                                                    implementation = KleidungsstueckListeOutputDTO.class))
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response getAlleKleidungsstuecke(KleidungsstueckFilter filter) {
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gestartet");
-        //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, this.sc.getPrincipal().getName());
-        List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = kleidungsstuecke.stream().map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck)).toList();
-        kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");
+            kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer den Benutzer " + benutzername + " durch die Rest-Ressource zurueck.");
+            List<Kleidungsstueck> kleidungsstuecke = this.kVerwaltung.holeAlleKleidungsstuecke(filter, benutzername);
+            //Konvertiere Kleidungsstuecke zu DTOs und ergänze HATEOAS Links
+            List<KleidungsstueckOutputDTO> kleidungsstueckeDTO = kleidungsstuecke.stream()
+                .map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck))
+                .peek(this::addSelfLinkZuKleidungsstueckInListeOutputDTO)
+                .toList();
+            KleidungsstueckListeOutputDTO kleidungsstueckListeOutputDTO = new KleidungsstueckListeOutputDTO(kleidungsstueckeDTO);
+            this.addSelfLinkZuKleidungsstueckeListeOutputDTO(kleidungsstueckListeOutputDTO);
 
-        return Response.status(Response.Status.OK).entity(kleidungsstueckDTOs).build();
+            kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(kleidungsstueckListeOutputDTO).build();
+        } catch (Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Geben aller Kleidungsstuecke eines Benutzers ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     public Response fallbackGetAlleKleidungsstuecke(KleidungsstueckFilter filter) {
@@ -112,16 +131,25 @@ public class KleidungsstueckeRestRessource {
                 responseCode = "201",
                 description = "CREATED",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response erstelleNeuesKleidungsstueck(@Valid KleidungsstueckInputDTO kleidungsDTO) {
-        //TODO eventuell erstelltes Objekt zurueckgeben
-        kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, this.sc.getPrincipal().getName());
-        kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
-        return Response.status(Response.Status.CREATED).entity(kleidungsId).build();
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
+            kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsDTO, benutzername);
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
+            return Response.status(Response.Status.CREATED).entity(kleidungsId).build();
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DELETE
@@ -137,18 +165,56 @@ public class KleidungsstueckeRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response loescheAlleKleidungsstuecke() {
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - gestartet");
-        if(this.kVerwaltung.loescheAlleKleidungsstuecke(this.sc.getPrincipal().getName())) {
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - gestartet");
+        kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - loescht alle Kleidungsstuecke fuer den Benutzer: " + benutzername + " durch Rest-Ressource");
+
+        if(this.kVerwaltung.loescheAlleKleidungsstuecke(benutzername)) {
             kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
             kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - beendet");
             return Response.status(Response.Status.OK).build();
+        } else {
+            kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde.");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - loescht alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheAlleKleidungsstuecke-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim loeschen aller Kleidungsstuecke vom Benutzer ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
+    private void addSelfLinkZuKleidungsstueckInListeOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
+        URI selfUri = this.uriBuilder.fuerKleidungsstueck(kleidungsstueckOutputDTO.kleidungsId, this.uriInfo);
+        Link link = Link.fromUri(selfUri)
+                        .rel("self")
+                        .type(MediaType.APPLICATION_JSON)
+                        .param("get kleidungsstueck", "GET")
+                        .param("change kleidungsstueck", "PATCH")
+                        .param("delete kleidungsstueck", "DELETE")
+                        .build();
+        kleidungsstueckOutputDTO.addLink("self", link);
+    }
+
+    private void addSelfLinkZuKleidungsstueckeListeOutputDTO(KleidungsstueckListeOutputDTO kleidungsstueckListeOutputDTO) {
+        URI selfUri = this.uriBuilder.fuerKleidungsstuecke(this.uriInfo);
+        Link link = Link.fromUri(selfUri)
+                        .rel("self")
+                        .type(MediaType.APPLICATION_JSON)
+                        .param("get alle kleidungsstuecke", "GET")
+                        .param("post erstelle neues kleidungsstueck", "POST")
+                        .param("delete alle kleidungsstuecke", "DELETE")
+                        .build();
+                        kleidungsstueckListeOutputDTO.addLink("self", link);
     }
 }

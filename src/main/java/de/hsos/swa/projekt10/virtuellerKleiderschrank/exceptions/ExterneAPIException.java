@@ -3,6 +3,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions;
 public class ExterneAPIException extends Exception {
     public static final int ERROR = 1;
     public static final int NOTFOUND = 2;
+    public static final int NOTSUPPORTED = 3;
     private int errorCode;
     
     public ExterneAPIException(String message, int errorCode) {

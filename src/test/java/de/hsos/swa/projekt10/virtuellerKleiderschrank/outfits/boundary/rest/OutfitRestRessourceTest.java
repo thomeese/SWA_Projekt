@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.OutfitKatalog;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import static io.restassured.RestAssured.given;
@@ -19,6 +20,9 @@ import javax.ws.rs.core.MediaType;
 class OutfitRestRessourceTest {
     @Inject
     KeycloakTestTokenService service;
+
+    
+
 
     @Test
     void getAlleOutfits() {

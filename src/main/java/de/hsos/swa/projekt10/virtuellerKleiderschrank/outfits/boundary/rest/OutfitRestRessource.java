@@ -38,7 +38,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 @Produces(MediaType.APPLICATION_JSON)
 public class OutfitRestRessource {
 
-    @LoggerName("out-ressource")
+    @LoggerName("out-rest-ressource")
     private static Logger outfitLog = Logger.getLogger(OutfitRestRessource.class);
     
     @Inject
@@ -55,7 +55,7 @@ public class OutfitRestRessource {
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Outfits des eingeloggten Benutzers.",
-        description = "Holt alle vom Benutzer erstellen Outfits aus seinem virtuellen Kleiderschrank."
+        description = "Holt alle vom Benutzer erstellen Outfits aus seinem virtuellen Kleiderschrank mit dem übergebenen Filter"
     )
     @APIResponses(
         value = {
@@ -65,18 +65,28 @@ public class OutfitRestRessource {
                 content = @Content(mediaType = MediaType.APPLICATION_JSON,
                                     schema = @Schema(type= SchemaType.ARRAY,
                                                     implementation = OutfitOutputDTO.class))
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response getAlleOutfits(OutfitFilter filter) {
-        outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
-        //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
-        List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(filter,this.sc.getPrincipal().getName())
-            .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
-        outfitLog.trace(System.currentTimeMillis() + ": getAlleOutfits-Methode - gibt alle Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
-        
-        return Response.status(Response.Status.OK).entity(outfitDTOs).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": getAlleOutfits-Methode - gibt alle Outfit fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+
+            //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
+            List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(filter, benutzername)
+                .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
+            outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(outfitDTOs).build();
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Holen aller Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     public Response fallbackGetAlleOutfits(OutfitFilter filter){
@@ -96,15 +106,27 @@ public class OutfitRestRessource {
                 responseCode = "201",
                 description = "CREATED",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
-        outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - gestartet");
-        long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
-        outfitLog.trace(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - erstellt ein neues Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
-        return Response.status(Response.Status.CREATED).entity(outfitId).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - erstellt ein neues Outfit fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            
+            long outfitId = this.outfitsVerwaltung.erstelleOutfit(outfitInputDTO, this.sc.getPrincipal().getName());
+            outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
+            return Response.status(Response.Status.CREATED).entity(outfitId).build();
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     @DELETE
@@ -120,18 +142,30 @@ public class OutfitRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response loescheAlleOutfits() {
-        outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - gestartet");
-        if(this.outfitsVerwaltung.loescheAlleOutfits(this.sc.getPrincipal().getName())) {
-            outfitLog.trace(System.currentTimeMillis() + ": loescheAlleOutfitst-Methode - loescht alle Outfits fuer einen Benutzer durch Rest-Ressource");
-            outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            if(this.outfitsVerwaltung.loescheAlleOutfits(this.sc.getPrincipal().getName())) {
+                outfitLog.trace(System.currentTimeMillis() + ": loescheAlleOutfitst-Methode - loescht alle Outfits fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+                outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet ohne das ein Outfit geloescht wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Loeschen aller Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - loescht alle Outfits fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfits-Methode - beendet ohne das ein Outfit geloescht wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+
+       
     }
 }

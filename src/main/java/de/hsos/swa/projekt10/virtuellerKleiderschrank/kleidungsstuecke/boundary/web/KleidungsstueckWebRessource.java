@@ -40,7 +40,6 @@ import io.quarkus.qute.TemplateInstance;
 
 
 @Path("/web/clothes")
-
 @Tag(name = "Kleidungsstuecke")
 public class KleidungsstueckWebRessource {
     @LoggerName("kl-web-ressource")
@@ -82,12 +81,12 @@ public class KleidungsstueckWebRessource {
     )
     public TemplateInstance getAlleKleidungsstuecke(KleidungsstueckFilter filter) {
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gestartet");
+        String benutzername = this.sc.getPrincipal().getName();
         //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, this.sc.getPrincipal().getName());
+        List<Kleidungsstueck> kleidungsstuecke= this.kVerwaltung.holeAlleKleidungsstuecke(filter, benutzername);
         List<KleidungsstueckOutputDTO> kleidungsstueckDTOs = kleidungsstuecke.stream().map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck)).toList();
-        kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer einen Benutzer durch Rest-Ressource");
+        kleidungLog.trace(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - gibt alle Kleidungsstuecke fuer den Benutzer " + benutzername + " durch Web-Ressource");
         kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");
-
         return Templates.general(kleidungsstueckDTOs);
     }
 
@@ -106,20 +105,28 @@ public class KleidungsstueckWebRessource {
     @APIResponses(
         value = {
             @APIResponse(
-                responseCode = "201",
-                description = "CREATED",
-                content = @Content(mediaType = MediaType.TEXT_HTML)
+                responseCode = "303",
+                description = "See Other"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response erstelleNeuesKleidungsstueck(@Context UriInfo uriInfo, KleidungsstueckFormDTO kleidungsstueckFormDTO) {
-        //TODO eventuell erstelltes Objekt zurueckgeben
-        KleidungsstueckInputDTO kleidungsstueckInputDTO = dtoKonverter.konvert(kleidungsstueckFormDTO);
-        kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsstueckInputDTO, this.sc.getPrincipal().getName());
-        kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
-        
-        return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
+        try {
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+
+            kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - erstellt ein neues Kleidungsstuecke fuer den Benutzer " + benutzername + " durch Web-Ressource");
+            KleidungsstueckInputDTO kleidungsstueckInputDTO = dtoKonverter.konvert(kleidungsstueckFormDTO);
+            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueck(kleidungsstueckInputDTO, benutzername);
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueck-Methode - beendet");
+            return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

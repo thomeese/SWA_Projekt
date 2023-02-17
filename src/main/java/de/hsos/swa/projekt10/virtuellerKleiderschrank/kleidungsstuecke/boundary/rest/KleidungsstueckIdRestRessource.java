@@ -75,21 +75,33 @@ public class KleidungsstueckIdRestRessource {
                     mediaType = "application/json",
                     schema = @Schema(implementation = KleidungsstueckOutputDTO.class)
                 )
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response getKleidungsstueck(@PathParam("id") long kleidungsId) {
-        kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
-        //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        Kleidungsstueck kleidungsstueck = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, 
-                                                                                    sc.getPrincipal().getName());
-        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(kleidungsstueck);
-        this.addLinksZuKleidungsstueckOutputDTO(kleidungsstueckDTO);
-        
-        kleidungLog.trace(System.currentTimeMillis()+ ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
-        return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
+            kleidungLog.trace(System.currentTimeMillis()+ ": getKleidungsstueck-Methode - gibt das Kleidungsstueck mit der Id " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource.");
+
+            //Hole alle Kleidungsstuecke vom Benutzer und Konvertiere zu OutputDTOs
+            Kleidungsstueck kleidungsstueck = this.kVerwaltung.holeKleidungsstueckById(kleidungsId, benutzername);
+            KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(kleidungsstueck);
+            this.addLinksZuKleidungsstueckOutputDTO(kleidungsstueckDTO);
+
+            kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(kleidungsstueckDTO).build();
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Holen eines Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } 
     }
+
+
 
     @DELETE
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
@@ -105,19 +117,35 @@ public class KleidungsstueckIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
+
+
     public Response loescheKleidungsstueck(@PathParam("id") long kleidungsId) {
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - gestartet");
-        if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, this.sc.getPrincipal().getName())) {
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
-        }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - gestartet");
+            kleidungLog.trace(System.currentTimeMillis()+ ": loescheKleidungsstueck-Methode - loescht das Kleidungsstueck mit der Id " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource.");
+   
+            if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, this.sc.getPrincipal().getName())) {
+                kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Loeschen eines Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } 
+        
+        
+
     }
 
     @PATCH
@@ -133,20 +161,29 @@ public class KleidungsstueckIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
-        kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
-        //TODO eventuell aktualisiertes Objekt zurueckgeben
-        if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, this.sc.getPrincipal().getName())) {
-            kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-            kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
-        }
-        kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
+            kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet das Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, this.sc.getPrincipal().getName())) {
+                kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet ohne das Kleidungsstueck zu bearbeiten");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Bearbeiten eines Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } 
     }
 
 
@@ -164,13 +201,28 @@ public class KleidungsstueckIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response fuegeKategorieHinzu(@PathParam("id") long kleidungsId,KategorieDTO kategorie){
-        if(this.kVerwaltung.fuegeKategorieHinzu(kleidungsId,kategorie, this.sc.getPrincipal().getName())) {
-            return Response.status(Response.Status.OK).build();
-        } else {
+        try {
+            kleidungLog.debug(System.currentTimeMillis() + ": fuegeKategorieHinzu-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.trace(System.currentTimeMillis() + ": fuegeKategorieHinzu-Methode - fuegt die Kategorie " + kategorie + " zu dem Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource hinzu");
+            
+            if(this.kVerwaltung.fuegeKategorieHinzu(kleidungsId,kategorie, benutzername)) {
+                kleidungLog.debug(System.currentTimeMillis() + ": fuegeKategorieHinzu-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                kleidungLog.debug(System.currentTimeMillis() + ": fuegeKategorieHinzu-Methode - beendet ohne eine Kategorie zu ergaenzen");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Hinzufuegen einer neuen Kategorie zu einem Kleidungsstueck ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -189,15 +241,29 @@ public class KleidungsstueckIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
-    public Response entferneKategorie(@PathParam("id") long kleidungsId,@PathParam("category") String kategorie){
-        if(this.kVerwaltung.entferneKategorie(kleidungsId,kategorie, this.sc.getPrincipal().getName())) {
-            return Response.status(Response.Status.OK).build();
-        } else {
+    public Response entferneKategorie(@PathParam("id") long kleidungsId,@PathParam("category") String kategorie){    
+        try {
+            kleidungLog.debug(System.currentTimeMillis() + ": entferneKategorie-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.trace(System.currentTimeMillis() + ": entferneKategorie-Methode - entfernt die Kategorie " + kategorie + " von dem Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource hinzu");
+            
+            if(this.kVerwaltung.entferneKategorie(kleidungsId,kategorie, this.sc.getPrincipal().getName())) {
+                return Response.status(Response.Status.OK).build();
+            } else {
+                kleidungLog.debug(System.currentTimeMillis() + ": entferneKategorie-Methode - beendet ohne eine Kategorie zu loeschen");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Entfernen einer Kategorie von einer Kleidungsstueck ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        } 
     }
 
     //HATEOS Links erstellen und adden

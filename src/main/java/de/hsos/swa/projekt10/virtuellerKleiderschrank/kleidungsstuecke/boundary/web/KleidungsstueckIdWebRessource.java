@@ -34,8 +34,6 @@ import org.jboss.logging.Logger;
 
 
 @Path("/web/clothes/{id}")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.TEXT_HTML)
 public class KleidungsstueckIdWebRessource {
     @LoggerName("kl-web-id-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdWebRessource.class);
@@ -55,6 +53,7 @@ public class KleidungsstueckIdWebRessource {
     }
 
     @GET
+    @Produces(MediaType.TEXT_HTML)
     @RolesAllowed("benutzer")
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
     @Operation(
@@ -67,17 +66,18 @@ public class KleidungsstueckIdWebRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = KleidungsstueckOutputDTO.class)
+                    mediaType = MediaType.TEXT_HTML
                 )
             )
         }
     )
     public TemplateInstance getKleidungsstueck(@PathParam("id") long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gestartet");
-        //Hole alle Kleidungsstuecke vom Benutzer und Convertiere zu OutputDTOs
-        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, sc.getPrincipal().getName()));
-        kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt ein Kleidungsstueck nach Id fuer einen Benutzer durch Rest-Ressource");
+        String benutzername = this.sc.getPrincipal().getName();
+        kleidungLog.trace(System.currentTimeMillis() + ": getKleidungsstueck-Methode - gibt das Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Web-Ressource");
+
+        //Hole alle Kleidungsstuecke vom Benutzer und Konvertiere zu OutputDTOs
+        KleidungsstueckOutputDTO kleidungsstueckDTO = this.dtoKonverter.konvert(this.kVerwaltung.holeKleidungsstueckById(kleidungsId, benutzername));
         kleidungLog.debug(System.currentTimeMillis() + ": getKleidungsstueck-Methode - beendet");
         return Template.detail(kleidungsstueckDTO);
     }
@@ -94,21 +94,33 @@ public class KleidungsstueckIdWebRessource {
         value = {
             @APIResponse(
                 responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+                description = "OK"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response loescheKleidungsstueck(@PathParam("id") long kleidungsId) {
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - gestartet");
-        if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, this.sc.getPrincipal().getName())) {
-            kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            if(this.kVerwaltung.loescheKleidungsstueck(kleidungsId, benutzername)) {
+                kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht das Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Web-Ressource");
+                kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Loeschen eines neuen Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        kleidungLog.trace(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - loescht ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck geloescht wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        
+        
+        
     }
 
     @PUT
@@ -123,20 +135,29 @@ public class KleidungsstueckIdWebRessource {
         value = {
             @APIResponse(
                 responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+                description = "OK"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
-        kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
-        if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, this.sc.getPrincipal().getName())) {
-            kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-            kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            if(this.kVerwaltung.bearbeiteKleidungsstueck(kleidungsId, kleidungsstueckInputDTO, benutzername)) {
+                kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet das Kleidungsstueck mit der ID " + kleidungsId + " fuer den Benutzer " + benutzername + " durch Web-Ressource");
+                kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {           
+                kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Bearbeiten eines neuen Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        kleidungLog.trace(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Rest-Ressource");
-        kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - beendet ohne das ein Kleidungsstueck bearbeitet wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 }

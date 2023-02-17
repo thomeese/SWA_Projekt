@@ -49,20 +49,36 @@ public class KleidungsstueckExternRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "400",
+                description = "Bad Request"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Valid KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
         try {
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, "gustav");
-        return Response.status(Response.Status.OK).entity(kleidungsId).build();
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - erstellt ein neues Kleidungsstueck fuer den Benutzer " + benutzername + " durch den Haendlernamen Rest-Ressource");
+
+            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, benutzername);
+            
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(kleidungsId).build();
         } catch (ExterneAPIException ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstueckes durch eine externe Api ist ein Fehler aufgetreten: " + ex.getMessage());
             if(ex.getErrorCode() == 2) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
             }
         } catch (Exception ex) {
+            kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstuecks mittels Haendlerinfo ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

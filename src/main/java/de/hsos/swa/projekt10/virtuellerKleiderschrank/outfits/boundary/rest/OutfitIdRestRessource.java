@@ -62,11 +62,18 @@ public class OutfitIdRestRessource {
         }
     )
     public Response getOutfit(@PathParam("id") long outfitId) {
-        outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
-        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, this.sc.getPrincipal().getName()));
-        outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt ein Outfit anhand der Id fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");
-        return Response.status(Response.Status.OK).entity(outfitDTO).build();
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
+            outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            
+            OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, benutzername));
+            outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(outfitDTO).build();
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Holen eines Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DELETE
@@ -82,19 +89,31 @@ public class OutfitIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response loescheOutfit(@PathParam("id") long outfitId) {
-        outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - gestartet");
-        if(this.outfitsVerwaltung.loescheOutfit(outfitId, this.sc.getPrincipal().getName())) {
-            outfitLog.trace(System.currentTimeMillis() + ": loescheOutfit-Methode - loescht ein Outfit fuer einen Benutzer durch Rest-Ressource");
-            outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            if(this.outfitsVerwaltung.loescheOutfit(outfitId, benutzername)) {
+                outfitLog.trace(System.currentTimeMillis() + ": loescheOutfit-Methode - loescht das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+                outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet ohne das ein Outfit geloescht wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Loeschen eines Kleidungsstueckes ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": loescheOutfit-Methode - loescht ein Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": loescheOutfit-Methode - beendet ohne das ein Outfit geloescht wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        
+        
     }
 
     @DELETE
@@ -111,19 +130,33 @@ public class OutfitIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response entferneKleidungsstueck(@PathParam("id") long outfitId,@PathParam("kleidungsId") long kleidungsId){
-        outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - gestartet");
-        if(this.outfitsVerwaltung.entferneKleidungsstueckVonOutfit(kleidungsId, outfitId, this.sc.getPrincipal().getName())){
-            outfitLog.trace(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - entfernt ein Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Rest-Ressource");
-            outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - entfernt das Kleidungsstueck mit der ID " + kleidungsId + " aus dem Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            if(this.outfitsVerwaltung.entferneKleidungsstueckVonOutfit(kleidungsId, outfitId, benutzername)){
+                outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet ohne das ein Kleidugnsstueck entfernt wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Entfernen eines Kleidungsstueckes von einem Outfit ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - entfernt ein Kleidungsstueck aus einem Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueck-Methode - beendet ohne das ein Kleidugnsstueck entfernt wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+
+        
+       
+        
     }
 
     @PATCH
@@ -139,19 +172,29 @@ public class OutfitIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response bearbeiteOutfit(@PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
-        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
-        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
-            outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Rest-Ressource");
-            outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, benutzername)) {
+                outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Bearbeiten eines Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     @PUT
@@ -167,18 +210,30 @@ public class OutfitIdRestRessource {
                 responseCode = "200",
                 description = "OK",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
             )
         }
     )
     public Response teileOutfit(@PathParam("id") long outfitId, OutfitTeilenDTO dto){
-        outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - gestartet");
-        if(this.outfitsVerwaltung.teileOutfit(outfitId, dto, this.sc.getPrincipal().getName())){
-            outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - veroeffentlicht ein Outfit fuer einen Benutzer durch Rest-Ressource");
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - Setzt des Teile-Status von dem Outfit fuer einen Benutzer durch Rest-Ressource");
+        if(this.outfitsVerwaltung.teileOutfit(outfitId, dto, benutzername)){
             outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - beendet");
             return Response.status(Response.Status.OK).build();
+        } else {
+            outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - Setzt des Teile-Status von dem Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
+            outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - beendet ohne das der Teile-Status eines Outfit  geaendert wurde");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - veroeffentlicht ein Outfit fuer einen Benutzer durch Rest-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - beendet ohne das ein Outfit oeffentlich geteilt wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Setzen des Teile-Status ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 }

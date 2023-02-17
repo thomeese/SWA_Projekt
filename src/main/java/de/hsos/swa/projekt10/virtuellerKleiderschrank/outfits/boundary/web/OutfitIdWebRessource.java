@@ -64,6 +64,15 @@ public class OutfitIdWebRessource {
         summary = "Holt ein einzelnes Outfit anhand der ID.",
         description = "Holt ein einzelnes Outfit anhand der ID, welches der eingeloggte Benutzer erstellt hat."
     )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.TEXT_HTML)
+            )
+        }
+    )
     /**
      * 
      * @param outfitId
@@ -72,12 +81,13 @@ public class OutfitIdWebRessource {
      */
     public TemplateInstance getOutfit(@PathParam("id") long outfitId) {
         outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
-        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, this.sc.getPrincipal().getName()));
+        String benutzername = this.sc.getPrincipal().getName();
+        OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, benutzername));
         List<KleidungsstueckInformationsDTO> kleidungsstuecke = new ArrayList<KleidungsstueckInformationsDTO>();
         for(int index = 0; index < outfitDTO.kleidungsstuecke.size(); index++ ){
             kleidungsstuecke.add(this.kInformation.gebeKleidungsstueckInforamtionen(outfitDTO.kleidungsstuecke.get(index)));
         }
-        outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt ein Outfit anhand der Id fuer einen Benutzer durch Rest-Ressource");
+        outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Web-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");
         return Templates.detail(outfitDTO,kleidungsstuecke);}
 
@@ -93,21 +103,30 @@ public class OutfitIdWebRessource {
         value = {
             @APIResponse(
                 responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+                description = "OK"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response bearbeiteOutfit(@Context UriInfo uriInfo, @PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
-        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
-        if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, this.sc.getPrincipal().getName())) {
-            outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
-            outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
-            return Response.status(Response.Status.OK).build();
+        try {
+            outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Web-Ressource");
+            if(this.outfitsVerwaltung.bearbeiteOutfit(outfitId, outfitInputDTO, benutzername)) {
+                outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet");
+                return Response.status(Response.Status.OK).build();
+            } else {
+                outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch(Exception ex) {
+            outfitLog.error(System.currentTimeMillis() + ": Beim Bearbeiten eines Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
-        outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
 
@@ -123,8 +142,11 @@ public class OutfitIdWebRessource {
         value = {
             @APIResponse(
                 responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+                description = "OK"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
@@ -146,10 +168,10 @@ public class OutfitIdWebRessource {
                 return Response.status(Response.Status.OK).build();
             }
             outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - für das Outfit mit der ID " + outfitId + " beendet ohne das der Teile-Status des Outfits veraendert wurde.");
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch(Exception ex) {
             outfitLog.error(System.currentTimeMillis() + ": Beim Teilen des Outfits mit der ID " + outfitId + " ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-}
+} 

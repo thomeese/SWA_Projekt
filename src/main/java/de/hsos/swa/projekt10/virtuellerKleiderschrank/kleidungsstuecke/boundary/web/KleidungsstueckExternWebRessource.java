@@ -53,24 +53,39 @@ public class KleidungsstueckExternWebRessource {
     @APIResponses(
         value = {
             @APIResponse(
-                responseCode = "200",
-                description = "OK",
-                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+                responseCode = "303",
+                description = "See Other"
+            ),
+            @APIResponse(
+                responseCode = "400",
+                description = "Bad Request"
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server Error"
             )
         }
     )
     public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo,KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) throws ExterneAPIException {
-        KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
         try {
-            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
-            return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - gestartet");
+            String benutzername = this.sc.getPrincipal().getName();
+            kleidungLog.trace(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - erstellt ein neues Kleidungsstueck fuer den Benutzer " + benutzername + " durch den Haendlernamen Web-Ressource");
+
+            KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
+            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, benutzername);
+
+            kleidungLog.debug(System.currentTimeMillis() + ": erstelleNeuesKleidungsstueckMitExterneAPI-Methode - beendet");
+            return Response.seeOther(uriInfo.getBaseUriBuilder().path(KleidungsstueckIdWebRessource.class).build(String.valueOf(kleidungsId))).build();
             } catch (ExterneAPIException ex) {
+                kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstueckes durch eine externe Api ist ein Fehler aufgetreten: " + ex.getMessage());
                 if(ex.getErrorCode() == 2) {
                     return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
                 } else {
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
                 }
             } catch (Exception ex) {
+                kleidungLog.error(System.currentTimeMillis() + ": Beim Erstellen eines neuen Kleidungsstueckes durch eine externe Api ist ein Fehler aufgetreten: " + ex.getMessage());
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }   
     }

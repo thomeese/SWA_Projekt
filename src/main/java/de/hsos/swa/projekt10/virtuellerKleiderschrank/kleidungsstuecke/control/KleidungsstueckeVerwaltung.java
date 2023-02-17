@@ -42,7 +42,7 @@ public class KleidungsstueckeVerwaltung {
                 kleidungsstueckInputDTO = this.kOnlineHaendler.holeKleidungsstueckVonHM(kleidungsExternDTO.artikelnummer, kleidungsExternDTO.groesse);
             break;
             default:
-            return -1;
+                throw new ExterneAPIException("Der angegebenen Haendler wird nicht unterstuetzt. Folgende Haendler werden Unterstuetzt: hm", ExterneAPIException.NOTSUPPORTED);
         }
         return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsstueckInputDTO, benutzername);
     }
