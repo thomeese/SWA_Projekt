@@ -11,16 +11,16 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Fa
 
 public class KleidungsstueckInputDTO {
 
-    @NotBlank(message="Groesse darf nicht leer sein")
+    @NotBlank(message = "Groesse darf nicht leer sein")
     public String groesse;
-    @NotNull(message="Farbe darf nicht leer sein und nur einer der gueltigen Farben enthalten")
+    @NotNull(message = "Farbe darf nicht leer sein und nur einer der gueltigen Farben enthalten")
     public Farbe farbe;
-    @NotNull(message="Typ darf nicht leer sein und nur einer der gueltigen Typen enthalten")
+    @NotNull(message = "Typ darf nicht leer sein und nur einer der gueltigen Typen enthalten")
     public Typ typ;
-    @NotBlank(message="HaendlerName darf nicht leer sein")
+    @NotBlank(message = "HaendlerName darf nicht leer sein")
     public String name;
     public List<String> kategorien = new ArrayList<>();
-    
+
     public KleidungsstueckInputDTO() {
     }
 

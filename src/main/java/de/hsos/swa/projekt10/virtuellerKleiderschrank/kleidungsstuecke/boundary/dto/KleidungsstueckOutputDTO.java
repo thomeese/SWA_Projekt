@@ -35,4 +35,47 @@ public class KleidungsstueckOutputDTO {
     public void addLink(String name, Link link) {
         this.links.put(name, link);
     }
+
+    
+    @Override
+    /**
+     * @author Thomas Meese
+     */
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        KleidungsstueckOutputDTO other = (KleidungsstueckOutputDTO) obj;
+
+        if(this.kleidungsId != other.kleidungsId){
+            return false;
+        }
+
+        if (!this.groesse.equals(other.groesse)) {
+            return false;
+        }
+
+        if (other.farbe != this.farbe) {
+            return false;
+        }
+
+        if (other.typ != this.typ) {
+            return false;
+        }
+
+        if (!this.name.equals(other.name)) {
+            return false;
+        }
+
+        if(this.kategorien.size() != other.kategorien.size()){
+            return false;
+        }
+
+        for (int index = 0; index < this.kategorien.size(); index++) {
+            if (!this.kategorien.get(index).equals(other.kategorien.get(index))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
