@@ -203,7 +203,7 @@ public class KleidungsstueckeRestRessource {
                         .param("change kleidungsstueck", "PATCH")
                         .param("delete kleidungsstueck", "DELETE")
                         .build();
-        kleidungsstueckOutputDTO.addLink("self", link);
+        kleidungsstueckOutputDTO.addLink(link);
     }
 
     private void addSelfLinkZuKleidungsstueckeListeOutputDTO(KleidungsstueckListeOutputDTO kleidungsstueckListeOutputDTO) {
@@ -215,6 +215,6 @@ public class KleidungsstueckeRestRessource {
                         .param("post erstelle neues kleidungsstueck", "POST")
                         .param("delete alle kleidungsstuecke", "DELETE")
                         .build();
-                        kleidungsstueckListeOutputDTO.addLink("self", link);
+        kleidungsstueckListeOutputDTO.addLink(link);
     }
 }

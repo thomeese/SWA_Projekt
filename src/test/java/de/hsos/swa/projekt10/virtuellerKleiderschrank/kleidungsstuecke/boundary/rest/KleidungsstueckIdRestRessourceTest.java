@@ -95,20 +95,17 @@ public class KleidungsstueckIdRestRessourceTest {
         .get()
         .then()
         .extract()
-        .body()
-        .asString();
+        .body().asString();
 
-        List<KleidungsstueckOutputDTO> erhalteneKleidungsstuecke= null;
+        KleidungsstueckOutputDTO erhalteneKleidungsstuecke= null;
 
         try{
-        erhalteneKleidungsstuecke = objectMapper.readValue(response, new TypeReference<List<KleidungsstueckOutputDTO>>(){});;
+        erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckOutputDTO.class);
+        Assert.assertTrue(erhalteneKleidungsstuecke.equals(testKleidungsstueck));
         }catch(Exception ex){
             Assert.assertTrue(false);
         }
-        if(erhalteneKleidungsstuecke.size() > 1){
-            Assert.assertTrue(false);
-        }
-        Assert.assertTrue(erhalteneKleidungsstuecke.get(0).equals(this.testKleidungsstueck));
+    
     }
 
     @Test

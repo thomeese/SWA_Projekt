@@ -283,7 +283,7 @@ public class KleidungsstueckIdRestRessource {
                         .param("change kleidungsstueck", "PATCH")
                         .param("delete kleidungsstueck", "DELETE")
                         .build();
-        kleidungsstueckOutputDTO.addLink("self", link);
+        kleidungsstueckOutputDTO.addLink(link);
     }
 
     private void addCollectionZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
@@ -295,7 +295,7 @@ public class KleidungsstueckIdRestRessource {
                         .param("add kleidungsstueck", "POST")
                         .param("delete alle kleidungsstuecke", "DELETE")
                         .build();
-        kleidungsstueckOutputDTO.addLink("collection", link);
+        kleidungsstueckOutputDTO.addLink(link);
     }
 
     private void addKategorieZuKleidungsstueckOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
@@ -306,6 +306,6 @@ public class KleidungsstueckIdRestRessource {
                         .param("add kategorie", "POST")
                         .param("delete kategorie mit Namen", "DELETE")
                         .build();
-        kleidungsstueckOutputDTO.addLink("kategorie", link);
+        kleidungsstueckOutputDTO.addLink(link);
     }
 }

@@ -22,6 +22,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckListeOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
@@ -29,6 +30,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.gateway.repository.KleidungsstueckRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.path.json.JsonPath;
 
 @QuarkusTest
 @TestHTTPEndpoint(KleidungsstueckeRestRessource.class)
@@ -87,31 +89,15 @@ class KleidungsstueckeRestRessourceTest {
                 .get()
                 .then()
                 .extract()
-                .body()
-                .asString();
+                .body() .asString();
 
-        List<KleidungsstueckOutputDTO> erhalteneKleidungsstuecke = new ArrayList<>();
+                KleidungsstueckListeOutputDTO erhalteneKleidungsstuecke = null;
         try {
-            erhalteneKleidungsstuecke = objectMapper.readValue(response,
-                    new TypeReference<List<KleidungsstueckOutputDTO>>() {
-                    });
+            erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckListeOutputDTO.class);
+            Assert.assertTrue(erhalteneKleidungsstuecke.kleidungsstuecke.containsAll(testKleidungsstuecke));
         } catch (Exception ex) {
             Assert.assertTrue(false);
         }
-
-        boolean test = true;
-        int index = 0;
-        if (testKleidungsstuecke.size() != erhalteneKleidungsstuecke.size()) {
-            Assert.assertTrue(false);
-        }
-        while (index < testKleidungsstuecke.size()) {
-            if (!testKleidungsstuecke.get(index).equals(erhalteneKleidungsstuecke.get(index))) {
-                test = false;
-            }
-            index++;
-        }
-
-        Assert.assertTrue(test);
     }
 
     @Test
