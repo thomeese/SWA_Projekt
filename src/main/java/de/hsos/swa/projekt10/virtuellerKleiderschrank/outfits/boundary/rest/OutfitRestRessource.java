@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,6 +31,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitListOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -39,13 +41,17 @@ import shared.LinkBuilder;
 @Tag(name = "Outfits")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+/**
+ * Realisisert die Rest Schnittstelle fuer die Interaktion mit allen Outfits dar.
+ * @author Manuel Arling
+ */
 public class OutfitRestRessource {
 
     @LoggerName("out-rest-ressource")
     private static Logger outfitLog = Logger.getLogger(OutfitRestRessource.class);
     
     @Inject
-    private OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitProvider outfitsVerwaltung;
 
     @Inject
     SecurityIdentity sc;
@@ -127,7 +133,7 @@ public class OutfitRestRessource {
             )
         }
     )
-    public Response erstelleNeuesOutfit(OutfitInputDTO outfitInputDTO) {
+    public Response erstelleNeuesOutfit(@Valid OutfitInputDTO outfitInputDTO) {
         try {
             outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - gestartet");
             String benutzername = this.sc.getPrincipal().getName();

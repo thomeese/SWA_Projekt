@@ -19,10 +19,14 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
-public class HMApi implements KleidungsstueckAPIProvider{
+/**
+ * Stellt den Adapter fuer den Zugriff auf die Externe API dar, um Informatioen zu Artikel zu bekommen.
+ * @author Manuel Arling
+ */
+public class HMApi{
 
     @LoggerName("hm-api-rest-client")
-    private static Logger hmLog = Logger.getLogger(KleidungsstueckAPIProvider.class);
+    private static Logger hmLog = Logger.getLogger(HMApi.class);
 
     @Inject
     @RestClient
@@ -31,8 +35,13 @@ public class HMApi implements KleidungsstueckAPIProvider{
     @Inject
     private EnumMapper enumMapper;
 
-
-    @Override
+    /**
+     * Diese Methode ruft ein Kleidungsstück aus der H&M-API anhand der angegebenen Artikelnummer ab.
+     *
+     * @param artikelnummer Die Artikelnummer des zu suchenden Kleidungsstücks
+     * @return Ein DTO-Objekt, das die Daten des abgerufenen Kleidungsstücks enthält
+     * @author Manuel Arling
+     */
     public KleidungsstueckInputDTO holeKleidungsstueckByArtikelnummer(String artikelnummer, String groesse) throws ExterneAPIException{
         hmLog.debug(System.currentTimeMillis() + ": holeKleidungsstueckByArtikelnummer-Methode fuer die Artikelnummer "
             + artikelnummer + " und Groesse: " + groesse + " - gestartet");
@@ -62,15 +71,26 @@ public class HMApi implements KleidungsstueckAPIProvider{
         return kleidungsstueck;
     }
 
-
+    /**
+     * Methode um ein HMColorDTO Objekt in eine Farbe umzuwandlen.
+     * Dabei wird mithilfe des EnumMappers die passende Farbe gefunden.
+     * 
+     * @param hmColorDTO Objekt vom Typ HMColorDTO, das die Farbdaten enthaelt.
+     * @return die gemappte Farbe
+     * @author Manuel Arling
+     */
     private Farbe gibGemappteFarbe(HMColorDTO hmColorDTO) {
-        Farbe gefundeneFarbe = enumMapper.gibNaehsteFarbeByNamenvergleich(hmColorDTO.text);
-        if(gefundeneFarbe != Farbe.Unbekannt) {
-            return gefundeneFarbe;
-        }
-        return enumMapper.gibNaesteFarbeByRGB(hmColorDTO.rgbColor);
+        return enumMapper.gibNaehsteFarbeByNamenvergleich(hmColorDTO.text);
     }
 
+    /**
+     * Methode um vom HMProductDTO Objekt den Typen in ein Typ von der Enum Typ umzuwandlen.
+     * Dabei wird mithilfe des EnumMappers die passende Farbe gefunden.
+     * 
+     * @param hmProductDTO Objekt vom Typ HMProductDTO, das Informationen zum Typ enthaelt.
+     * @return gemappter Typ
+     * @author Manuel Arling
+     */
     private Typ gibtGemapptenTyp(HMProductDTO hmProductDTO) {
         Typ gefundenerTyp = enumMapper.gibZugehoerigenTypByNamenvergleich(hmProductDTO.productTypeName);
         if(gefundenerTyp == null || gefundenerTyp == Typ.Unbekannt) {

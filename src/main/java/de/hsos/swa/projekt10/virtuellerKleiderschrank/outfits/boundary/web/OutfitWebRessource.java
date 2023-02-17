@@ -26,6 +26,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest.OutfitIdRestRessource;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 
 import java.util.ArrayList;
@@ -35,6 +36,10 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.security.identity.SecurityIdentity;
 @Path("/web/outfits")
+/**
+ * Realisisert die Web Schnittstelle fuer die Interaktion mit allen Kleidungsstuecken dar.
+ * @author Manuel Arling
+ */
 public class OutfitWebRessource {
 
     @CheckedTemplate
@@ -46,7 +51,7 @@ public class OutfitWebRessource {
     private static Logger outfitLog = Logger.getLogger(OutfitIdRestRessource.class);
     
     @Inject
-    private OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitProvider outfitsVerwaltung;
 
     @Inject
     private DTOKonverter dtoKonverter;

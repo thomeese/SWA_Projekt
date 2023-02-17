@@ -41,6 +41,10 @@ import io.quarkus.qute.TemplateInstance;
 
 @Path("/web/clothes")
 @Tag(name = "Kleidungsstuecke")
+/**
+ * Realisisert die Web Schnittstelle fuer die Interaktion mit allen Kleidungsstuecken dar.
+ * @author Manuel Arling
+ */
 public class KleidungsstueckWebRessource {
     @LoggerName("kl-web-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckWebRessource.class);

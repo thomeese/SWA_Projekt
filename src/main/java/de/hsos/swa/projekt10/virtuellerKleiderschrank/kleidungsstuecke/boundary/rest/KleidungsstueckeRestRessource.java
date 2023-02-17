@@ -49,6 +49,10 @@ import org.jboss.logging.Logger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Kleidungsstuecke")
+/**
+ * Realisisert die Rest Schnittstelle fuer die Interaktion mit allen Kleidungsstuecken dar.
+ * @author Manuel Arling
+ */
 public class KleidungsstueckeRestRessource {
     @LoggerName("kl-rest-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckeRestRessource.class);
@@ -71,9 +75,6 @@ public class KleidungsstueckeRestRessource {
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    @Fallback(
-        fallbackMethod = "fallbackGetAlleKleidungsstuecke"
-    )
     @RolesAllowed("benutzer")
     @Operation(
         summary = "Holt alle Kleidungsstuecke des eingeloggten Benutzers.",

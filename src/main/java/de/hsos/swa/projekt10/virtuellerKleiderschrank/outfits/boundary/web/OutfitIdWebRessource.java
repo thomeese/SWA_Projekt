@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -28,6 +29,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest.OutfitIdRestRessource;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 
 import io.quarkus.arc.log.LoggerName;
@@ -37,6 +39,10 @@ import io.quarkus.security.identity.SecurityIdentity;
 
 
 @Path("/web/outfits/{id}")
+/**
+ * Realisisert die Web Schnittstelle fuer die Interaktion mit einem Outfit und bietet CRUD-Funktionen an.
+ * @author Manuel Arling
+ */
 public class OutfitIdWebRessource {
 
     @CheckedTemplate
@@ -48,7 +54,7 @@ public class OutfitIdWebRessource {
     private static Logger outfitLog = Logger.getLogger(OutfitIdRestRessource.class);
     
     @Inject
-    private OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitProvider outfitsVerwaltung;
 
     @Inject
     KleidungsstueckInformation kInformation;
@@ -111,7 +117,7 @@ public class OutfitIdWebRessource {
             )
         }
     )
-    public Response bearbeiteOutfit(@Context UriInfo uriInfo, @PathParam("id") long outfitId, OutfitInputDTO outfitInputDTO) {
+    public Response bearbeiteOutfit(@Context UriInfo uriInfo, @PathParam("id") long outfitId,@Valid OutfitInputDTO outfitInputDTO) {
         try {
             outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - gestartet");
             String benutzername = this.sc.getPrincipal().getName();
@@ -157,7 +163,7 @@ public class OutfitIdWebRessource {
      * @author Manuel Arling
      * @return
      */
-    public Response teileOutfit(@PathParam("id") long outfitId, OutfitTeilenDTO dto){
+    public Response teileOutfit(@PathParam("id") long outfitId,@Valid OutfitTeilenDTO dto){
         try {
             String benutzername = this.sc.getPrincipal().getName();
             outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - für das Outfit mit der ID " + outfitId + " gestartet.");

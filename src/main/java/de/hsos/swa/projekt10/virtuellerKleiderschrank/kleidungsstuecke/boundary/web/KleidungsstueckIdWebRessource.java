@@ -18,6 +18,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,6 +35,10 @@ import org.jboss.logging.Logger;
 
 
 @Path("/web/clothes/{id}")
+/**
+ * Realisisert die Web Schnittstelle fuer ein Kleidungsstueck dar, bei der die CRUD-Funktionen umgesetzt sind.
+ * @author Manuel Arling
+ */
 public class KleidungsstueckIdWebRessource {
     @LoggerName("kl-web-id-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdWebRessource.class);
@@ -143,7 +148,7 @@ public class KleidungsstueckIdWebRessource {
             )
         }
     )
-    public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO) {
+    public Response bearbeiteKleidungsstueck(@PathParam("id") long kleidungsId,@Valid KleidungsstueckInputDTO kleidungsstueckInputDTO) {
         try {
             kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueck-Methode - gestartet");
             String benutzername = this.sc.getPrincipal().getName();

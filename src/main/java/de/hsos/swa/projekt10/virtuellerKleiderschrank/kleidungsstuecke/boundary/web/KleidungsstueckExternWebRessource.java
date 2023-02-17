@@ -29,6 +29,11 @@ import io.quarkus.security.identity.SecurityIdentity;
 @Path("/web/clothes/extern")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.TEXT_HTML)
+/**
+ * Realisisert die Web Schnittstelle fuer das Erstellen eines Kleidungsstuecks durch eine externe API dar.
+ * 
+ * @author Manuel Arling
+ */
 public class KleidungsstueckExternWebRessource {
     @LoggerName("kl-web-extern-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckExternWebRessource.class);
