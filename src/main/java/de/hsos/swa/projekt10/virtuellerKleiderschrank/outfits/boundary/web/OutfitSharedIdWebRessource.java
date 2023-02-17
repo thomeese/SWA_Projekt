@@ -50,6 +50,12 @@ public class OutfitSharedIdWebRessource {
         summary = "Holt ein einzelnes geteiltes Outfit anhand der ID.",
         description = "Holt ein einzelnes Outfit anhand der ID, welches vom erstellten Benutzer als geteilt makiert wurde."
     )
+    /**
+     * 
+     * @param outfitId
+     * @return
+     * @author Manuel Arling
+     */
     public TemplateInstance getOutfit(@PathParam("id") long outfitId) {
         outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
         OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeGeteiltesOutfit(outfitId));

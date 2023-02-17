@@ -131,7 +131,8 @@ class OutfitRestRessourceTest {
     }
 
     @Test
-    void erstelleOutfit() {
+
+    void erstelleOutfit(){
         OutfitInputDTO dto = new OutfitInputDTO("test", new ArrayList<String>(), new ArrayList<Long>(), false);
         given()
                 .auth()

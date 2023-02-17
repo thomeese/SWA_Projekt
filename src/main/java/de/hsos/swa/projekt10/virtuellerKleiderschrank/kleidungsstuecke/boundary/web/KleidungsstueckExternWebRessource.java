@@ -18,6 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions.ExterneAPIException;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
@@ -58,9 +59,19 @@ public class KleidungsstueckExternWebRessource {
             )
         }
     )
-    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo,KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) {
+    public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Context UriInfo uriInfo,KleidungsstueckExternFormDTO kleidungsstueckExternFormInputDTO) throws ExterneAPIException {
         KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO = this.dtoKonverter.konvert(kleidungsstueckExternFormInputDTO);
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
-        return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
+        try {
+            long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, sc.getPrincipal().getName());
+            return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(kleidungsId)).build()).build();
+            } catch (ExterneAPIException ex) {
+                if(ex.getErrorCode() == 2) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+                } else {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+                }
+            } catch (Exception ex) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }   
     }
 }

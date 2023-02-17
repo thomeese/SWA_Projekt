@@ -1,5 +1,6 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.rest;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.jboss.logging.Logger;
 
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions.ExterneAPIException;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
 import io.quarkus.arc.log.LoggerName;
@@ -36,7 +38,7 @@ public class KleidungsstueckExternRestRessource {
 
     @POST
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
-    //@RolesAllowed("benutzer")
+    @RolesAllowed("benutzer")
     @Operation(
         summary = "Erstellt ein neues Kleidungsstueck anhand der Artikelnummer und des Online Haendlers.",
         description = "Erstellt ein neues Kleidungsstueck anhand der Daten im DTO durch die Verwendung einer externen API des Online Haendlers."
@@ -51,7 +53,17 @@ public class KleidungsstueckExternRestRessource {
         }
     )
     public Response erstelleNeuesKleidungsstueckMitExterneAPI(@Valid KleidungsstueckExternInputDTO kleidungsstueckExternInputDTO) {
-        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, "gustav"); // sc.getPrincipal().getName());
+        try {
+        long kleidungsId = this.kVerwaltung.erstelleKleidungsstueckMitExterneApi(kleidungsstueckExternInputDTO, "gustav");
         return Response.status(Response.Status.OK).entity(kleidungsId).build();
+        } catch (ExterneAPIException ex) {
+            if(ex.getErrorCode() == 2) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+            }
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
