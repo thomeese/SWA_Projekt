@@ -26,6 +26,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalA
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL.KleidungsstueckInformationsDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.rest.OutfitIdRestRessource;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 
@@ -101,5 +102,48 @@ public class OutfitIdWebRessource {
         outfitLog.trace(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Web-Id-Put-Ressource");
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfit-Methode - beendet ohne das ein Outfit bearbeitet wurde");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+
+    @PUT
+    @Path("/share")
+    @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
+    @RolesAllowed("benutzer")
+    @Operation(
+        summary = "Ändert den Teilen-Status des Outfits.",
+        description = "Ändert den Teilen-Status des vom Benutzer erstellen Outfits, auf den gewuenschten Status."
+    )
+    @APIResponses(
+        value = {
+            @APIResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(mediaType = MediaType.APPLICATION_JSON)
+            )
+        }
+    )
+    /**
+     * 
+     * @param outfitId
+     * @param dto
+     * @author Manuel Arling
+     * @return
+     */
+    public Response teileOutfit(@PathParam("id") long outfitId, OutfitTeilenDTO dto){
+        try {
+            String benutzername = this.sc.getPrincipal().getName();
+            outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - für das Outfit mit der ID " + outfitId + " gestartet.");
+            outfitLog.trace(System.currentTimeMillis() + ": teileOutfit-Methode - aendert den Teile-Status des Outfits mit der ID " + outfitId + " fuer den Benutzer " + benutzername + " durch die Web-Ressource.");
+            if(this.outfitsVerwaltung.teileOutfit(outfitId, dto, benutzername)){
+                outfitLog.info(System.currentTimeMillis() + ": der Teile-Status des Outfits mit der ID " + outfitId + " wurde erfolgreich geaendert.");
+                outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - erfolgreich beendet.");
+                return Response.status(Response.Status.OK).build();
+            }
+            outfitLog.debug(System.currentTimeMillis() + ": teileOutfit-Methode - für das Outfit mit der ID " + outfitId + " beendet ohne das der Teile-Status des Outfits veraendert wurde.");
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch(Exception ex) {
+            outfitLog.warn(System.currentTimeMillis() + ": Beim Teilen des Outfits mit der ID " + outfitId + " ist ein Fehler aufgetreten: " + ex.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
