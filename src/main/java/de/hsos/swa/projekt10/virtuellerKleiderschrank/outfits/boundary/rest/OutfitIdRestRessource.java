@@ -13,6 +13,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -25,8 +26,10 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.Outfi
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitTeilenDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
+import shared.LinkBuilder;
 
 @Path("/api/outfits/{id}")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,6 +43,12 @@ public class OutfitIdRestRessource {
 
     @Inject
     SecurityIdentity sc;
+
+    @Inject
+    LinkBuilder linkBuilder;
+
+    @Inject
+    UriInfo uriInfo;
 
 
     @GET
@@ -58,6 +67,14 @@ public class OutfitIdRestRessource {
                     mediaType = "application/json",
                     schema = @Schema(implementation = OutfitOutputDTO.class)
                 )
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Internal Server error"
+            ),
+            @APIResponse(
+                responseCode = "400",
+                description = "Bad Request"
             )
         }
     )
@@ -67,8 +84,13 @@ public class OutfitIdRestRessource {
             outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - gestartet");
             outfitLog.trace(System.currentTimeMillis() + ": getOutfit-Methode - gibt das Outfit mit der Id " + outfitId + " fuer den Benutzer " + benutzername + " durch Rest-Ressource");
             
-            OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(this.outfitsVerwaltung.holeOutfitById(outfitId, benutzername));
+            Outfit outfit = this.outfitsVerwaltung.holeOutfitById(outfitId, benutzername);
+            if(outfit == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Das Outfit konnte nicht gefunden werden").build(); 
+            }
+            OutfitOutputDTO outfitDTO = OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit);
             outfitLog.debug(System.currentTimeMillis() + ": getOutfit-Methode - beendet");
+            this.linkBuilder.addLinksZuOutfitOutputDTO(outfitDTO, this.uriInfo);
             return Response.status(Response.Status.OK).entity(outfitDTO).build();
         } catch(Exception ex) {
             outfitLog.error(System.currentTimeMillis() + ": Beim Holen eines Outfits ist ein Fehler aufgetreten: " + ex.getMessage());

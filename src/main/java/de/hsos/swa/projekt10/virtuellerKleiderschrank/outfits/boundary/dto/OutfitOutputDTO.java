@@ -1,8 +1,17 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.core.Link;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity.Outfit;
+import shared.LinkDeserializer;
+import shared.LinkSerializer;
 
 public class OutfitOutputDTO {
     public long outfitId;
@@ -10,6 +19,10 @@ public class OutfitOutputDTO {
     public List<String> kategorien;
     public List<Long> kleidungsstuecke;
     public boolean istGeteilt;
+
+    @JsonSerialize(using = LinkSerializer.class)
+    @JsonDeserialize(using = LinkDeserializer.class)
+    public List<Link> links = new ArrayList<>();
 
     public OutfitOutputDTO() {
     }
@@ -29,9 +42,14 @@ public class OutfitOutputDTO {
             // TODO DTO eventuell hier nochmal Validieren? oder sicher vollständig, da schon
             // in Ressource validiert wird und nur dort InputDTO erstellt wird.
             return new OutfitOutputDTO(outfit.getOutfitId(), outfit.getName(), outfit.getKategorien(),
-                    outfit.getKleidungsstuecke(), outfit.isGeteilt());
+                    new ArrayList<>(outfit.getKleidungsstuecke()), outfit.isGeteilt());
 
         }
+    }
+
+
+    public void addLink(Link link) {
+        this.links.add(link);
     }
 
     @Override

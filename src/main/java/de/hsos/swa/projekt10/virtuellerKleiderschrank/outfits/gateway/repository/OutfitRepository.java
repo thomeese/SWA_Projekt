@@ -1,6 +1,7 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.gateway.repository;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
@@ -72,7 +73,7 @@ public class OutfitRepository implements OutfitKatalog {
         }
         outfit.setBenutzername(benutzername);
         outfit.setKategorien(dto.kategorien);
-        outfit.setKleidungsstuecke(dto.kleidungsstuecke);
+        outfit.setKleidungsstuecke(new HashSet<>(dto.kleidungsstuecke));
         this.entityManager.persist(outfit);
         outfitLog.trace(System.currentTimeMillis()
                 + ": bearbeiteOutfitEinesBenutzers-Methode - bearbeitet ein Outfit fuer einen Benutzer durch Repository");
@@ -211,7 +212,7 @@ public class OutfitRepository implements OutfitKatalog {
                     + ": entferneAlleKleidungsstueckeVomOutfit-Methode - beendet ohne das ein Kleidungsstueck entfernt wurde");
             return false;
         }
-        outfit.setKleidungsstuecke(new ArrayList<Long>());
+        outfit.setKleidungsstuecke(new HashSet<>());
         try {
             this.entityManager.persist(outfit);
             outfitLog.trace(System.currentTimeMillis()
@@ -331,13 +332,7 @@ public class OutfitRepository implements OutfitKatalog {
     public void behandleKleidungsstueckEntfernt(@ObservesAsync KleidungsstueckEntfernt event) {
         List<Outfit> outfits = this.gebeAlleOutfitsVomBenutzer(new OutfitFilter(), event.benutzername());
         for (int index = 0; index < outfits.size(); index++) {
-            for (int index2 = 0; index2 < outfits.get(index).getKleidungsstuecke().size(); index2++) {
-                if (outfits.get(index).getKleidungsstuecke().get(index2) == event.klediungsId()) {
-                    this.entferneKleidungsstueckVomOutfit(event.klediungsId(), outfits.get(index).getOutfitId(),
-                            event.benutzername());
-                }
-            }
-
+            outfits.get(index).getKleidungsstuecke().remove(event.klediungsId());
         }
     }
 
