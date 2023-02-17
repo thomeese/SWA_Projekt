@@ -13,13 +13,16 @@ public class OutfitInputDTO {
     public List<String> kategorien;
     @NotNull(message="Es muss eine liste von Kleidungsstuecken geben.")
     public List<Long> kleidungsstuecke;
+    
+    public boolean teilen = false;
 
     public OutfitInputDTO(){
     }
 
-    public OutfitInputDTO(String name, List<String> kategorien, List<Long> kleidungsstuecke) {
+    public OutfitInputDTO(String name, List<String> kategorien, List<Long> kleidungsstuecke, boolean teilen) {
         this.name = name;
         this.kategorien = kategorien;
         this.kleidungsstuecke = kleidungsstuecke;
+        this.teilen = teilen;
     }
 }

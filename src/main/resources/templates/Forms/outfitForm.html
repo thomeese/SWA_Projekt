@@ -4,14 +4,19 @@
     <input name="name" type="text" class="form-control" id="nameForm" aria-describedby="nameHilfe" {#if bearbeiten}value="{outfit.name}"disabled{/if} >
     {#if !bearbeiten}<div id="nameHilfe" class="form-text">Wie soll dein Outfit heißen?</div>{/if}
 </div>
-{#if bearbeiten} 
+{#if bearbeiten}
+<div class="form-check bearbeiten-hidden">
+  <input class="form-check-input" name="teilen" type="checkbox" value="" id="teilen" {#if outfit.istGeteilt} checked {/if}>
+  <label class="form-check-label" for="teilen">Outfit öffentlich
+  </label>
+</div>
 {#include kategorien.html kategorien=outfit.kategorien} {/include}
 <div class="row">
     <div class="col">
-    <h5 class="title">Kleidungsstuecke: </h5>
+    <h5 class="title">Kleidungsstücke:</h5>
     </div>
     <div class="col-1">
-    <button type="button" class="btn btn-outline-primary {#if bearbeiten}bearbeiten-hidden{/if}" data-bs-toggle="modal" data-bs-target="#addKleidungssteuckZuOutfitModal"> + </button>
+    <button type="button" class="btn btn-outline-primary bearbeiten-hidden" data-bs-toggle="modal" data-bs-target="#addKleidungssteuckZuOutfitModal"> + </button>
     {#include Modals/kleidungsstueckZuOutfitHinzufuegenModal.html}{/include}
     </div>
 </div>
@@ -20,7 +25,7 @@
 					<thead>
 						<tr>
 							<th scope="col-1">Name des Kleidungsstücks</th>
-							<th class="{#if bearbeiten}bearbeiten-hidden{/if}" scope="col-sm-1">Aktionen</th>
+							<th class="bearbeiten-hidden" scope="col-sm-1">Aktionen</th>
 						</tr>
 					</thead>
 					<tbody id="table-body">
@@ -65,17 +70,19 @@ let submitButton = document.getElementById("submitButton");
 
 let outfitForm = document.getElementById("outfitForm");
 let nameElement = document.getElementById("nameForm");
+let teilenCheckbox = document.getElementById("teilen");
 
 if(bearbeitenButton) {
-bearbeitenButton.addEventListener("click", () => {
+    bearbeitenButton.addEventListener("click", () => {
 
-Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
-    item.removeAttribute("hidden", "");
+    Array.prototype.forEach.call(bearbeitenHiddenElements, function(item){
+        item.removeAttribute("hidden", "");
+        });
+
+        bearbeitenButton.setAttribute("hidden", "");
+        nameElement.removeAttribute("disabled");
+        document.getElementById("teileButton").setAttribute("hidden", "");
     });
-
-    bearbeitenButton.setAttribute("hidden", "");
-    nameElement.removeAttribute("disabled");
-});
 }
 
 let kleidungsstueckList = document.getElementById("kleidungsstueckList");
@@ -92,7 +99,7 @@ kleidungsstueckList.addEventListener("click", kleidungsstueck => {
 });
 
 function createJsonString() {
-    let jsonString = '{"name":"' + nameElement.value +'", "kategorien":[';
+    let jsonString = '{"name":"' + nameElement.value +'", "teilen":' + teilenCheckbox.checked +', "kategorien":[';
         var kategorienLi = document.getElementsByClassName("kategorie-item");
         let ersteKategorie = true;
         console.log(kategorienLi)

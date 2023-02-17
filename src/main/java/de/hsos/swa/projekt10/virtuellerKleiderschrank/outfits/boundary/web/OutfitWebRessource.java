@@ -94,4 +94,6 @@ public class OutfitWebRessource {
         outfitLog.debug(System.currentTimeMillis() + ": erstelleNeuesOutfit-Methode - beendet");
         return Response.seeOther(uriInfo.getRequestUriBuilder().path(String.valueOf(outfitId)).build()).build();
     }
+
+    
 }
