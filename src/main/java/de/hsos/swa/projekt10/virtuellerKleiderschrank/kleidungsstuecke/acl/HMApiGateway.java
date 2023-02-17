@@ -29,7 +29,8 @@ public interface HMApiGateway {
         delay = 250
     )
     @CircuitBreaker(
-        requestVolumeThreshold=4 
+        requestVolumeThreshold = 8,
+        successThreshold = 2 
     )
     KleidungsstueckHMDTO getKleidungsstueckByArtikelnummer(@QueryParam("productcode") String artikelnummer);
 }
