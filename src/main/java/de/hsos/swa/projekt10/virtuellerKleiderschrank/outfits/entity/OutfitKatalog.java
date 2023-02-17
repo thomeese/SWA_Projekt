@@ -93,6 +93,7 @@ public interface OutfitKatalog {
      * @param outfitId Id des zu holenden Outfits
      * @param benutzername Benutzer dessen Outfit geholt werden soll
      * @return Outfit gefundenes Outfit
+     * @author Thomas Meese
      */
     public Outfit gebeOutfitVomBenutzerMitId(long outfitId, String benutzername);
 
@@ -101,8 +102,21 @@ public interface OutfitKatalog {
      * wird null zurueckgegeben.
      * @param outfitId Id des geteilten Outfits
      * @return Outfit gefundenes Outfit
+     * @author Thomas Meese
      */
     public Outfit gebeGeteilitesOutfit(long outfitId);
 
+    /**
+     * Aendert den Status eines Outfit. Je nach dem welcher Wert
+     * im DTO steht wird Outfit oeffentlich geteilt oder es ist
+     * nicht mehr oeffentlich zugaenglich, wenn die Methode 
+     * durchlaufen wurde.
+     * 
+     * @param outfitId ID des zu aendernden Outfits
+     * @param dto Information ob das Outfit geteilt werden soll oder nicht
+     * @param benutzername  Benutzer dessen Outfit bearbeitet werden soll
+     * @return Boolean true, wenn die Aenderung erfolgreich war, ansonsten false
+     * @author Thomas Meese
+     */
     public boolean teileOutfitEinesBenutzers(long outfitId, OutfitTeilenDTO dto, String benutzername);
 }

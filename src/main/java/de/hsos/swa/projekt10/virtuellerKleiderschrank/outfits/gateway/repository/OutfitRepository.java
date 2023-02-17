@@ -54,6 +54,9 @@ public class OutfitRepository implements OutfitKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean bearbeiteOutfitEinesBenutzers(OutfitInputDTO dto, long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": bearbeiteOutfitEinesBenutzers-Methode - gestartet");
         Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
@@ -79,6 +82,9 @@ public class OutfitRepository implements OutfitKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean loescheOutfitEinesBenutzers(long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": loescheOutfitEinesBenutzers-Methode - gestartet");
         Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
@@ -106,6 +112,9 @@ public class OutfitRepository implements OutfitKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean loescheAlleOutfitsEinesBenutzers(String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": loescheAlleOutfitsEinesBenutzers-Methode - gestartet");
         List<Outfit> zuLoeschen = this.gebeAlleOutfitsVomBenutzer(new OutfitFilter(), benutzername);
@@ -129,6 +138,9 @@ public class OutfitRepository implements OutfitKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public Outfit fuegeKleidungsstueckZuOutfitHinzu(long kleidungsId, long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": fuegeKleidungsstueckZuOutfitHinzu-Methode - gestartet");
         Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
@@ -149,6 +161,9 @@ public class OutfitRepository implements OutfitKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean entferneKleidungsstueckVomOutfit(long kleidungsId, long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": entferneKleidungsstueckVomOutfit-Methode - gestartet");
         Outfit outfit = this.gebeOutfitVomBenutzerMitId(outfitId, benutzername);
@@ -214,7 +229,10 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Override
-    @Timeout(value = 250)
+    @Timeout(value = 2500)
+    /**
+     * @author Thomas Meese
+     */
     public List<Outfit> gebeAlleOutfitsVomBenutzer(OutfitFilter filter, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeAlleOutfitsVomBenutzer-Methode - gestartet");
         try {
@@ -251,6 +269,9 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Override
+    /**
+     * @author Thomas Meese
+     */
     public Outfit gebeOutfitVomBenutzerMitId(long outfitId, String benutzername) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeOutfitVomBenutzerMitId-Methode - gestartet");
         try {
@@ -274,6 +295,9 @@ public class OutfitRepository implements OutfitKatalog {
     }
 
     @Override
+    /**
+     * @author Thomas Meese
+     */
     public Outfit gebeGeteilitesOutfit(long outfitId) {
         outfitLog.debug(System.currentTimeMillis() + ": gebeGeteilitesOutfit-Methode - gestartet");
         try {

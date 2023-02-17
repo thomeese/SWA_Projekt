@@ -28,6 +28,13 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kl
 import io.quarkus.arc.log.LoggerName;
 
 @Dependent
+/**
+ * Repositorie fuer das Entity Kleidungsstueck. 
+ * Enthaelt alle Methode die fuer die Interaktion mit
+ * dem Entity in Kombination mit der Datenbak benoetigt wird
+ * 
+ * @author Thomas Meese
+ */
 public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @LoggerName("kl-repo")
@@ -44,6 +51,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean loescheKleidungsstueckEinesBenutzers(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": loescheKleidungsstueckEinesBenutzers-Methode - gestartet");
         Kleidungsstueck kleidungsstueck = this.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
@@ -56,6 +66,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
         }
         try {
             this.entityManager.remove(kleidungsstueck);
+            //Event feuern
             this.kleidungsstueckEntferntEvent.fireAsync(new KleidungsstueckEntfernt(kleidungsId, benutzername));
         } catch (IllegalArgumentException | TransactionRequiredException e) {
             kleidungLog.trace(System.currentTimeMillis()
@@ -72,6 +83,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+    /**
+     * @author Thomas Meese
+     */
     public boolean loescheAlleKleidungsstueckeEinesBenutzers(String benutzername) {
         kleidungLog
                 .debug(System.currentTimeMillis() + ": loescheAlleKleidungsstueckeEinesBenutzers-Methode - gestartet");
@@ -108,6 +122,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
+    /**
+     * @author Thomas Meese
+     */
     public Kleidungsstueck gebeKleidungsstueckVomBenutzerMitId(long kleidungsId, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckVomBenutzerMitId-Methode - gestartet");
         try {
@@ -131,7 +148,10 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
-    @Timeout(value = 250)
+    @Timeout(value = 2500)
+    /**
+     * @author Thomas Meese
+     */
     public List<Kleidungsstueck> gebeAlleKleidungsstueckeVomBenutzer(KleidungsstueckFilter filter,
             String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeAlleKleidungsstueckeVomBenutzer-Methode - gestartet");
@@ -148,11 +168,6 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
             if (filter.typ != null && !filter.typ.equals("")) {
                 querryString = querryString + " and k.typ = :typ";
             }
-            /*
-             * if (filter.kategorie != null && !filter.kategorie.equals("")) {
-             * querryString = querryString + " and k.kategorie = :kategorie";
-             * }
-             */
 
             TypedQuery<Kleidungsstueck> query = this.entityManager.createQuery(querryString, Kleidungsstueck.class);
             query.setParameter("benutzername", benutzername);
@@ -191,6 +206,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+     /**
+     * @author Thomas Meese
+     */
     public long erstelleKleidungsstueckFuerBenutzer(KleidungsstueckInputDTO dto, String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": erstelleKleidungsstueckFuerBenutzer-Methode - gestartet");
         Kleidungsstueck kleidung = new Kleidungsstueck(dto.groesse, dto.farbe, dto.typ, dto.name, dto.kategorien,
@@ -204,6 +222,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
+     /**
+     * @author Thomas Meese
+     */
     public boolean bearbeiteKleidungsstueckEinesBenutzers(long kleidungsId, KleidungsstueckInputDTO dto,
             String benutzername) {
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - gestartet");
@@ -224,9 +245,16 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
         if (dto.typ != null) {
             kleidung.setTyp(dto.typ);
         }
-        kleidung.setBenutzername(benutzername);
+        if(dto.name != null) {
+            kleidung.setName(dto.name);
+        }
         kleidung.setKategorien(dto.kategorien);
-        this.entityManager.persist(kleidung);
+        try{
+           this.entityManager.persist(kleidung); 
+        }catch(Exception ex){
+            return false;
+        }
+        
         kleidungLog.trace(System.currentTimeMillis()
                 + ": bearbeiteKleidungsstueckEinesBenutzers-Methode - bearbeitet ein Kleidungsstueck fuer einen Benutzer durch Repository");
         kleidungLog.debug(System.currentTimeMillis() + ": bearbeiteKleidungsstueckEinesBenutzers - beendet");
@@ -234,6 +262,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
+     /**
+     * @author Thomas Meese
+     */
     public Kleidungsstueck gebeKleidungsstueckMitId(long kleidungsId) {
         kleidungLog.debug(System.currentTimeMillis() + ": gebeKleidungsstueckMitId-Methode - gestartet");
         Kleidungsstueck outfit = this.entityManager.find(Kleidungsstueck.class, kleidungsId);
@@ -244,6 +275,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
+     /**
+     * @author Thomas Meese
+     */
     public boolean fuegeKleidungsstueckVomBenutzerKategorieHinzu(long kleidungsId, KategorieDTO kategorie,
             String benutzername) {
         kleidungLog.debug(
@@ -274,6 +308,9 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
+     /**
+     * @author Thomas Meese
+     */
     public boolean entferneKategorieVonKleidungsstueckVomBenutzer(long kleidungsId, String kategorie,
             String benutzername) {
         kleidungLog.debug(
@@ -290,7 +327,7 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
             kleidungsstueck.getKategorien().remove(kategorie);
             this.entityManager.persist(kleidungsstueck);
             kleidungLog.trace(System.currentTimeMillis()
-                        + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - entfernt eine Kategorie aus dem Kleidungsstueck durch Repository");
+                    + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - entfernt eine Kategorie aus dem Kleidungsstueck durch Repository");
             kleidungLog.debug(System.currentTimeMillis()
                     + ": fuegeKleidungsstueckVomBenutzerKategorieHinzu-Methode - beendet");
             return true;

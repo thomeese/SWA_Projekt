@@ -22,7 +22,6 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckListeOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
@@ -30,7 +29,6 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Ty
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.gateway.repository.KleidungsstueckRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.path.json.JsonPath;
 
 @QuarkusTest
 @TestHTTPEndpoint(KleidungsstueckeRestRessource.class)
@@ -89,15 +87,31 @@ class KleidungsstueckeRestRessourceTest {
                 .get()
                 .then()
                 .extract()
-                .body() .asString();
+                .body()
+                .asString();
 
-                KleidungsstueckListeOutputDTO erhalteneKleidungsstuecke = null;
+        List<KleidungsstueckOutputDTO> erhalteneKleidungsstuecke = new ArrayList<>();
         try {
-            erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckListeOutputDTO.class);
-            Assert.assertTrue(erhalteneKleidungsstuecke.kleidungsstuecke.containsAll(testKleidungsstuecke));
+            erhalteneKleidungsstuecke = objectMapper.readValue(response,
+                    new TypeReference<List<KleidungsstueckOutputDTO>>() {
+                    });
         } catch (Exception ex) {
             Assert.assertTrue(false);
         }
+
+        boolean test = true;
+        int index = 0;
+        if (testKleidungsstuecke.size() != erhalteneKleidungsstuecke.size()) {
+            Assert.assertTrue(false);
+        }
+        while (index < testKleidungsstuecke.size()) {
+            if (!testKleidungsstuecke.get(index).equals(erhalteneKleidungsstuecke.get(index))) {
+                test = false;
+            }
+            index++;
+        }
+
+        Assert.assertTrue(test);
     }
 
     @Test
@@ -126,20 +140,9 @@ class KleidungsstueckeRestRessourceTest {
                 .when()
                 .delete();
 
-        int listsize = given()
-                .auth()
-                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
-                .when()
-                .get()
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList("")
-                .size();
+            List<Kleidungsstueck>kleidungsstuecke = this.kleidungsstueckKatalog.gebeAlleKleidungsstueckeVomBenutzer(new KleidungsstueckFilter(), benutzername);
         // Listengroesse muss hier gleich 0 sein da alle Kleidungsstuecke geloescht
         // wurden.
-        Assert.assertTrue(listsize == 0);
+        Assert.assertTrue(kleidungsstuecke.size() == 0);
     }
 }

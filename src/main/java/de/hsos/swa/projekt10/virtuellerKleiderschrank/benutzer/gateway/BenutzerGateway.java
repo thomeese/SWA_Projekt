@@ -23,6 +23,9 @@ public class BenutzerGateway implements Benutzerverwaltung{
     private static String realmName = "quarkus";
     private static String roleName = "benutzer";
     @Override
+    /**
+     * @author Thomas Meese
+     */
     public boolean legeBenutzerkontoAn(NutzerDTO nutzerdaten) {
         //Nutzer erstellen
         UserRepresentation nutzer = new UserRepresentation();

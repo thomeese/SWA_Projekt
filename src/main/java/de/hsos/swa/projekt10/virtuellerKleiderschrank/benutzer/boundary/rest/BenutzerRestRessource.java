@@ -31,12 +31,18 @@ public class BenutzerRestRessource {
     @APIResponses(
         value = {
             @APIResponse(
-                responseCode = "200",
-                description = "OK",
+                responseCode = "201",
+                description = "CREATED",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON)
             )
         }
     )
+    /**
+     * Erstellt ein neues Benutzerkonto anhand der Daten im DTO.
+     * 
+     * @param nutzerdaten Fuer die Erstellung benoetigte Nutzerdaten
+     * @return Respose Statuscode 201 bei erfolgt
+     */
     public Response addUser(NutzerDTO nutzerdaten) {
        if(this.benutzerverwaltung.legeBenutzerkontoAn(nutzerdaten)){
         return Response.status(Status.CREATED).build();

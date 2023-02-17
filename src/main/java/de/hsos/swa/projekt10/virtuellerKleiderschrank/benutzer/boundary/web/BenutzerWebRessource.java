@@ -47,12 +47,18 @@ public class BenutzerWebRessource {
     @APIResponses(
         value = {
             @APIResponse(
-                responseCode = "200",
-                description = "OK",
+                responseCode = "201",
+                description = "Created",
                 content = @Content(mediaType = MediaType.TEXT_HTML)
             )
         }
     )
+    /**
+     * Erstellt ein neues Benutzerkonto anhand der Daten im DTO.
+     * 
+     * @param nutzerdatenForm Form DTO mit den fuer die Erstellung benoetigten Nutzerdaten
+     * @return Response Statuscode 201 bei Erfolg
+     */
     public Response addUser(NutzerFormDTO nutzerdatenForm) {
         NutzerDTO nutzerdaten = new NutzerDTO(nutzerdatenForm.vorname, nutzerdatenForm.nachname, nutzerdatenForm.email, nutzerdatenForm.benutzername, nutzerdatenForm.passwort);
        if(this.benutzerverwaltung.legeBenutzerkontoAn(nutzerdaten)){
