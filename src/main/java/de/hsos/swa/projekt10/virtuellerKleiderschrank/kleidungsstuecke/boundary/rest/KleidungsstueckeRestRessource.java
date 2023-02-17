@@ -9,11 +9,13 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.K
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
-import shared.RessourceUriBuilder;
+import shared.LinkBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -61,7 +63,7 @@ public class KleidungsstueckeRestRessource {
     SecurityIdentity sc;
 
     @Inject
-    RessourceUriBuilder uriBuilder;
+    LinkBuilder linkBuilder;
 
     @Context
     UriInfo uriInfo;
@@ -101,10 +103,10 @@ public class KleidungsstueckeRestRessource {
             //Konvertiere Kleidungsstuecke zu DTOs und ergänze HATEOAS Links
             List<KleidungsstueckOutputDTO> kleidungsstueckeDTO = kleidungsstuecke.stream()
                 .map(kleidungsstueck -> this.dtoKonverter.konvert(kleidungsstueck))
-                .peek(this::addSelfLinkZuKleidungsstueckInListeOutputDTO)
+                .peek(kleidungsstueck -> this.linkBuilder.addLinksZuKleidungsstueckOutputDTO(kleidungsstueck, uriInfo))
                 .toList();
             KleidungsstueckListeOutputDTO kleidungsstueckListeOutputDTO = new KleidungsstueckListeOutputDTO(kleidungsstueckeDTO);
-            this.addSelfLinkZuKleidungsstueckeListeOutputDTO(kleidungsstueckListeOutputDTO);
+            this.linkBuilder.addLinksZuKleidungsstueckeListeOutputDTO(kleidungsstueckListeOutputDTO, this.uriInfo);
 
             kleidungLog.debug(System.currentTimeMillis() + ": getAlleKleidungsstuecke-Methode - beendet");
             return Response.status(Response.Status.OK).entity(kleidungsstueckListeOutputDTO).build();
@@ -193,28 +195,4 @@ public class KleidungsstueckeRestRessource {
     }
 
 
-
-    private void addSelfLinkZuKleidungsstueckInListeOutputDTO(KleidungsstueckOutputDTO kleidungsstueckOutputDTO) {
-        URI selfUri = this.uriBuilder.fuerKleidungsstueck(kleidungsstueckOutputDTO.kleidungsId, this.uriInfo);
-        Link link = Link.fromUri(selfUri)
-                        .rel("self")
-                        .type(MediaType.APPLICATION_JSON)
-                        .param("get kleidungsstueck", "GET")
-                        .param("change kleidungsstueck", "PATCH")
-                        .param("delete kleidungsstueck", "DELETE")
-                        .build();
-        kleidungsstueckOutputDTO.addLink(link);
-    }
-
-    private void addSelfLinkZuKleidungsstueckeListeOutputDTO(KleidungsstueckListeOutputDTO kleidungsstueckListeOutputDTO) {
-        URI selfUri = this.uriBuilder.fuerKleidungsstuecke(this.uriInfo);
-        Link link = Link.fromUri(selfUri)
-                        .rel("self")
-                        .type(MediaType.APPLICATION_JSON)
-                        .param("get alle kleidungsstuecke", "GET")
-                        .param("post erstelle neues kleidungsstueck", "POST")
-                        .param("delete alle kleidungsstuecke", "DELETE")
-                        .build();
-        kleidungsstueckListeOutputDTO.addLink(link);
-    }
 }

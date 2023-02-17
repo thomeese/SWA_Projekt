@@ -20,8 +20,10 @@ public class LinkSerializer extends JsonSerializer<List<Link>>{
                     jsonGenerator.writeStartArray();
                     for (Link link : links) {
                         jsonGenerator.writeStartObject();
-                        jsonGenerator.writeStringField("uri", link.getUri().toString());
+                        jsonGenerator.writeStringField("href", link.getUri().toString());
                         jsonGenerator.writeStringField("rel", link.getRel());
+                        jsonGenerator.writeStringField("method", link.getParams().get("method"));
+                        jsonGenerator.writeStringField("title", link.getTitle());
                         jsonGenerator.writeEndObject();
                     }
                     jsonGenerator.writeEndArray();

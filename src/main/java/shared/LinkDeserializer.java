@@ -21,7 +21,8 @@ public class LinkDeserializer extends JsonDeserializer<List<Link>> {
         List<Link> links = new ArrayList<>();
         JsonNode node = parser.getCodec().readTree(parser);
         for (JsonNode linkNode : node) {
-            Link link = Link.fromUri(linkNode.get("uri").asText()).rel(linkNode.get("rel").asText()).build();
+            Link link = Link.fromUri(linkNode.get("href").asText()).rel(linkNode.get("rel").asText())
+            .title(linkNode.get("title").asText()).param("method", linkNode.get("method").asText()).build();
             links.add(link);
         }
         return links;

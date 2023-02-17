@@ -1,7 +1,10 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.inject.Vetoed;
 import javax.persistence.Access;
@@ -24,8 +27,8 @@ public class Outfit {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> kategorien = new ArrayList<>();
     private boolean geteilt;
-    @ElementCollection
-    private List<Long> kleidungsstuecke = new ArrayList<>();
+    @ElementCollection()
+    private Set<Long> kleidungsstuecke = new HashSet<>();
     private String benutzername;
 
     public Outfit() {
@@ -36,7 +39,6 @@ public class Outfit {
         this.kategorien = kategorien;
         this.geteilt = geteilt;
         this.benutzername = benutzername;
-        this.kleidungsstuecke = new ArrayList<Long>();
     }
 
     public long getOutfitId() {
@@ -63,10 +65,10 @@ public class Outfit {
     public void setGeteilt(boolean geteilt) {
         this.geteilt = geteilt;
     }
-    public List<Long> getKleidungsstuecke() {
+    public Set<Long> getKleidungsstuecke() {
         return kleidungsstuecke;
     }
-    public void setKleidungsstuecke(List<Long> kleidungsstuecke) {
+    public void setKleidungsstuecke(Set<Long> kleidungsstuecke) {
         this.kleidungsstuecke = kleidungsstuecke;
     }
     public String getBenutzername() {

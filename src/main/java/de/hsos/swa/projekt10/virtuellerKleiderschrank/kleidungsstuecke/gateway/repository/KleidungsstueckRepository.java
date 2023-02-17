@@ -148,7 +148,6 @@ public class KleidungsstueckRepository implements KleidungsstueckKatalog {
     }
 
     @Override
-    @Timeout(value = 2500)
     /**
      * @author Thomas Meese
      */

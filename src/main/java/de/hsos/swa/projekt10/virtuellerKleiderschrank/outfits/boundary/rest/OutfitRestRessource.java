@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -27,10 +28,12 @@ import org.jboss.logging.Logger;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitInputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitListOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
+import shared.LinkBuilder;
 
 @Path("/api/outfits")
 @Tag(name = "Outfits")
@@ -46,6 +49,12 @@ public class OutfitRestRessource {
 
     @Inject
     SecurityIdentity sc;
+
+    @Inject
+    LinkBuilder linkBuilder;
+
+    @Inject
+    UriInfo uriInfo;
 
     @GET
     @Transactional(value = javax.transaction.Transactional.TxType.REQUIRES_NEW)
@@ -80,9 +89,14 @@ public class OutfitRestRessource {
 
             //Hole alle Outfits vom Benutzer und Convertiere zu OutputDTOs
             List<OutfitOutputDTO> outfitDTOs = this.outfitsVerwaltung.holeAlleOutfits(filter, benutzername)
-                .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit)).toList();
-            outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
-            return Response.status(Response.Status.OK).entity(outfitDTOs).build();
+                .stream().map(outfit -> OutfitOutputDTO.Converter.toOutfitOutputDTO(outfit))
+                .peek(outfitDTO -> this.linkBuilder.addLinksZuOutfitOutputDTO(outfitDTO, this.uriInfo))
+                .toList();
+            OutfitListOutputDTO outfitListOutputDTO = new OutfitListOutputDTO(outfitDTOs);
+            this.linkBuilder.addLinksZuOutfitListeOutputDTO(outfitListOutputDTO, this.uriInfo);
+            
+                outfitLog.debug(System.currentTimeMillis() + ": getAlleOutfits-Methode - beendet");
+            return Response.status(Response.Status.OK).entity(outfitListOutputDTO).build();
         } catch(Exception ex) {
             outfitLog.error(System.currentTimeMillis() + ": Beim Holen aller Outfits ist ein Fehler aufgetreten: " + ex.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
