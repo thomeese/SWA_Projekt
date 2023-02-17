@@ -20,6 +20,7 @@ import org.jboss.logging.Logger;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions.ExterneAPIException;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
@@ -37,7 +38,7 @@ public class KleidungsstueckExternRestRessource {
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckExternRestRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
 
     @Inject
     SecurityIdentity sc;

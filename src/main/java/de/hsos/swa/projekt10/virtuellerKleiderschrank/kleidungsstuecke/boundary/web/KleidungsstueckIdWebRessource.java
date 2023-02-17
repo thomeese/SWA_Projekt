@@ -10,6 +10,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
@@ -44,7 +45,7 @@ public class KleidungsstueckIdWebRessource {
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdWebRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
 
     @Inject
     private DTOKonverter dtoKonverter;

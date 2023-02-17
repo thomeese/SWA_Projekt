@@ -23,6 +23,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternFormDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
@@ -39,7 +40,7 @@ public class KleidungsstueckExternWebRessource {
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckExternWebRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
     
     @Inject
     private DTOKonverter dtoKonverter;
