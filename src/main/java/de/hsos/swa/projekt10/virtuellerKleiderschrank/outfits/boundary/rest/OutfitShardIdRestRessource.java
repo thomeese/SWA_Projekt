@@ -26,6 +26,7 @@ import org.jboss.logging.Logger;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL.KleidungsstueckInformation;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL.KleidungsstueckInformationsDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -34,13 +35,17 @@ import io.quarkus.security.identity.SecurityIdentity;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @ApplicationScoped
+/**
+ * Realisisert die Rest Schnittstelle fuer das Setzen des Teile-Status eines Outfits.
+ * @author Manuel Arling
+ */
 public class OutfitShardIdRestRessource {
 
     @LoggerName("out-rest-shared-id-ressource")
     private static Logger outfitLog = Logger.getLogger(OutfitShardIdRestRessource.class);
     
     @Inject
-    private OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitProvider outfitsVerwaltung;
 
     @Inject
     KleidungsstueckInformation kInformation;

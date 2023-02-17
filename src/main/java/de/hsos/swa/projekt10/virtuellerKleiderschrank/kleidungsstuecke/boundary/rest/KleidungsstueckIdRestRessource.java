@@ -12,6 +12,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -20,6 +21,7 @@ import shared.LinkBuilder;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -40,12 +42,16 @@ import java.net.URI;
 @Path("/api/clothes/{id}")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+/**
+ * Realisisert die Rest Schnittstelle fuer ein Kleidungsstueck dar, bei der die CRUD-Funktionen umgesetzt sind.
+ * @author Manuel Arling
+ */
 public class KleidungsstueckIdRestRessource {
     @LoggerName("kl-rest-id-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckIdRestRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
 
     @Inject
     private DTOKonverter dtoKonverter;
@@ -208,7 +214,7 @@ public class KleidungsstueckIdRestRessource {
             )
         }
     )
-    public Response fuegeKategorieHinzu(@PathParam("id") long kleidungsId,KategorieDTO kategorie){
+    public Response fuegeKategorieHinzu(@PathParam("id") long kleidungsId,@Valid KategorieDTO kategorie){
         try {
             kleidungLog.debug(System.currentTimeMillis() + ": fuegeKategorieHinzu-Methode - gestartet");
             String benutzername = this.sc.getPrincipal().getName();

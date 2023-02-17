@@ -20,18 +20,25 @@ import org.jboss.logging.Logger;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.exceptions.ExterneAPIException;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckExternInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
 
 @Path("/api/clothes/extern")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+
+/**
+ * Realisisert die Rest Schnittstelle fuer das Erstellen eines Kleidungsstuecks durch eine externe API dar.
+ * 
+ * @author Manuel Arling
+ */
 public class KleidungsstueckExternRestRessource {
     @LoggerName("kl-rest-extern-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckExternRestRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
 
     @Inject
     SecurityIdentity sc;

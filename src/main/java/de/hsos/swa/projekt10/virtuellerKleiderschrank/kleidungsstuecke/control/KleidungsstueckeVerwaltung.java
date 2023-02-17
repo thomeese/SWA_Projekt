@@ -15,7 +15,11 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kl
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
 
 @ApplicationScoped
-public class KleidungsstueckeVerwaltung {
+/**
+ * Realisiert die Funktionen fuer das Verwalten jeglicher Kleidungsstuecke.
+ * @author Manuel Arling
+ */
+public class KleidungsstueckeVerwaltung implements KleidungstueckeProvider {
     
     @Inject
     private KleidungsstueckKatalog kKatalog;
@@ -23,18 +27,22 @@ public class KleidungsstueckeVerwaltung {
     @Inject
     private KleidungsstueckVonOnlineHaendler kOnlineHaendler;
 
+    @Override
     public List<Kleidungsstueck> holeAlleKleidungsstuecke(KleidungsstueckFilter filter, String benutzername) {
         return this.kKatalog.gebeAlleKleidungsstueckeVomBenutzer(filter,benutzername);
     }
 
+    @Override
     public Kleidungsstueck holeKleidungsstueckById(long kleidungsId, String benutzername) {
         return this.kKatalog.gebeKleidungsstueckVomBenutzerMitId(kleidungsId, benutzername);
     }
 
+    @Override
     public long erstelleKleidungsstueck(KleidungsstueckInputDTO kleidungsDTO, String benutzername) {
         return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsDTO, benutzername);
     }
 
+    @Override
     public long erstelleKleidungsstueckMitExterneApi(KleidungsstueckExternInputDTO kleidungsExternDTO, String benutzername) throws ExterneAPIException{
         KleidungsstueckInputDTO kleidungsstueckInputDTO;
         switch(kleidungsExternDTO.haendlerName) {
@@ -47,22 +55,27 @@ public class KleidungsstueckeVerwaltung {
         return this.kKatalog.erstelleKleidungsstueckFuerBenutzer(kleidungsstueckInputDTO, benutzername);
     }
 
+    @Override
     public boolean loescheKleidungsstueck(long kleidungsId, String benutzer) {
         return this.kKatalog.loescheKleidungsstueckEinesBenutzers(kleidungsId, benutzer);
     }
 
+    @Override
     public boolean loescheAlleKleidungsstuecke(String benutzer) {
         return this.kKatalog.loescheAlleKleidungsstueckeEinesBenutzers(benutzer);
     }
 
+    @Override
     public boolean bearbeiteKleidungsstueck(long kleidungsId, KleidungsstueckInputDTO kleidungsstueckInputDTO, String benutzername) {
         return this.kKatalog.bearbeiteKleidungsstueckEinesBenutzers(kleidungsId, kleidungsstueckInputDTO, benutzername);
     }
 
+    @Override
     public boolean fuegeKategorieHinzu(long kleidungsId, KategorieDTO kategorie, String benutzername) {
         return this.kKatalog.fuegeKleidungsstueckVomBenutzerKategorieHinzu(kleidungsId, kategorie, benutzername);
     }
 
+    @Override
     public boolean entferneKategorie(long kleidungsid, String kategorie, String benutzername) {
         return this.kKatalog.entferneKategorieVonKleidungsstueckVomBenutzer(kleidungsid, kategorie, benutzername);
     }

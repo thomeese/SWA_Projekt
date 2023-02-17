@@ -6,6 +6,7 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungsstueckeVerwaltung;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.control.KleidungstueckeProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -41,12 +42,16 @@ import io.quarkus.qute.TemplateInstance;
 
 @Path("/web/clothes")
 @Tag(name = "Kleidungsstuecke")
+/**
+ * Realisisert die Web Schnittstelle fuer die Interaktion mit allen Kleidungsstuecken dar.
+ * @author Manuel Arling
+ */
 public class KleidungsstueckWebRessource {
     @LoggerName("kl-web-ressource")
     private static Logger kleidungLog = Logger.getLogger(KleidungsstueckWebRessource.class);
 
     @Inject
-    private KleidungsstueckeVerwaltung kVerwaltung;
+    private KleidungstueckeProvider kVerwaltung;
 
     @Inject
     private DTOKonverter dtoKonverter;

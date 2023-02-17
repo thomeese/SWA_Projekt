@@ -20,6 +20,7 @@ import org.jboss.logging.Logger;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL.KleidungsstueckInformation;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL.KleidungsstueckInformationsDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.boundary.dto.OutfitOutputDTO;
+import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitProvider;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.outfits.control.OutfitsVerwaltung;
 import io.quarkus.arc.log.LoggerName;
 import io.quarkus.qute.CheckedTemplate;
@@ -28,6 +29,10 @@ import io.quarkus.security.identity.SecurityIdentity;
 
 @Path("/web/outfits/shared/{id}")
 @ApplicationScoped
+/**
+ * Realisisert die Web Schnittstelle fuer das Interagieren mit einem geteilten Outfit.
+ * @author Manuel Arling
+ */
 public class OutfitSharedIdWebRessource {
     
     @CheckedTemplate
@@ -39,7 +44,7 @@ public class OutfitSharedIdWebRessource {
     private static Logger outfitLog = Logger.getLogger(OutfitSharedIdWebRessource.class);
     
     @Inject
-    private OutfitsVerwaltung outfitsVerwaltung;
+    private OutfitProvider outfitsVerwaltung;
 
     @Inject
     KleidungsstueckInformation kInformation;
