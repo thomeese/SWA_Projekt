@@ -3,6 +3,7 @@ package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.gateway.
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;

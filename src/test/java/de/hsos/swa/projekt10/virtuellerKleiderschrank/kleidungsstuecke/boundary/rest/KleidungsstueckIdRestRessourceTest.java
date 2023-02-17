@@ -12,7 +12,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
@@ -84,12 +83,29 @@ public class KleidungsstueckIdRestRessourceTest {
                 .pathParam("id", this.testKleidungsstueck.kleidungsId)
                 .patch();
 
-        Kleidungsstueck kleidung = this.kleidungsstueckKatalog
-                .gebeKleidungsstueckVomBenutzerMitId(this.testKleidungsstueck.kleidungsId, benutzername);
-        if (kleidung == null) {
+        String response = given()
+                .auth()
+                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
+                .when()
+                .pathParam("id", this.testKleidungsstueck.kleidungsId)
+                .get()
+                .then()
+                .extract()
+                .body().asString();
+
+        KleidungsstueckOutputDTO erhalteneKleidungsstuecke = null;
+
+        try {
+            erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckOutputDTO.class);
+            for (String kategorie : erhalteneKleidungsstuecke.kategorien) {
+                if (kategorie.equals(name)) {
+                    Assert.assertTrue(true);
+                }
+            }
+            Assert.assertTrue(false);
+        } catch (Exception ex) {
             Assert.assertTrue(false);
         }
-        Assert.assertTrue(kleidung.getName().equals(name));
 
     }
 
@@ -104,19 +120,29 @@ public class KleidungsstueckIdRestRessourceTest {
                 .pathParam("category", kategorieName)
                 .delete("/category/{category}");
 
-        Kleidungsstueck kleidung = this.kleidungsstueckKatalog
-                .gebeKleidungsstueckVomBenutzerMitId(this.testKleidungsstueck.kleidungsId, benutzername);
-        if (kleidung == null) {
+                String response = given()
+                .auth()
+                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
+                .when()
+                .pathParam("id", this.testKleidungsstueck.kleidungsId)
+                .get()
+                .then()
+                .extract()
+                .body().asString();
+
+        KleidungsstueckOutputDTO erhalteneKleidungsstuecke = null;
+
+        try {
+            erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckOutputDTO.class);
+            for (String kategorie : erhalteneKleidungsstuecke.kategorien) {
+                if (kategorie.equals(kategorieName)) {
+                    Assert.assertTrue(false);
+                }
+            }
+            Assert.assertTrue(true);
+        } catch (Exception ex) {
             Assert.assertTrue(false);
         }
-
-        for (String kategorie : kleidung.getKategorien()) {
-            if (kategorie.equals(kategorieName)) {
-                Assert.assertTrue(false);
-            }
-        }
-
-        Assert.assertTrue(true);
 
     }
 
@@ -133,18 +159,29 @@ public class KleidungsstueckIdRestRessourceTest {
                 .pathParam("id", this.testKleidungsstueck.kleidungsId)
                 .post();
 
-        Kleidungsstueck kleidung = this.kleidungsstueckKatalog
-                .gebeKleidungsstueckVomBenutzerMitId(this.testKleidungsstueck.kleidungsId, benutzername);
-        if (kleidung == null) {
+                String response = given()
+                .auth()
+                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
+                .when()
+                .pathParam("id", this.testKleidungsstueck.kleidungsId)
+                .get()
+                .then()
+                .extract()
+                .body().asString();
+
+        KleidungsstueckOutputDTO erhalteneKleidungsstuecke = null;
+
+        try {
+            erhalteneKleidungsstuecke = objectMapper.readValue(response, KleidungsstueckOutputDTO.class);
+            for (String kategorie : erhalteneKleidungsstuecke.kategorien) {
+                if (kategorie.equals(dto.kategorieNamen)) {
+                    Assert.assertTrue(true);
+                }
+            }
+            Assert.assertTrue(false);
+        } catch (Exception ex) {
             Assert.assertTrue(false);
         }
-
-        for(String kategorie: kleidung.getKategorien()){
-            if(kategorie.equals(dto.kategorieNamen)){
-                Assert.assertTrue(true);
-            }
-        }
-        Assert.assertTrue(false);
 
     }
 

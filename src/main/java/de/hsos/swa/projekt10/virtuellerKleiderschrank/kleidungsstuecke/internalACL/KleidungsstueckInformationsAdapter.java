@@ -1,11 +1,12 @@
 package de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.internalACL;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.KleidungsstueckKatalog;
-@ApplicationScoped
+@Dependent
 public class KleidungsstueckInformationsAdapter implements KleidungsstueckInformation{
     @Inject
     public KleidungsstueckKatalog kKatalog;

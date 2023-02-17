@@ -11,7 +11,6 @@ import de.hsos.swa.projekt10.virtuellerKleiderschrank.KeycloakTestTokenService;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.DTOKonverter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckFilter;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckInputDTO;
-import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.boundary.dto.KleidungsstueckOutputDTO;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Farbe;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Kleidungsstueck;
 import de.hsos.swa.projekt10.virtuellerKleiderschrank.kleidungsstuecke.entity.Typ;
@@ -70,15 +69,12 @@ class OutfitRestRessourceTest {
         this.kleidungsstueckKatalog.erstelleKleidungsstueckFuerBenutzer(k1, benutzername);
         this.kleidungsstueckKatalog.erstelleKleidungsstueckFuerBenutzer(k2, benutzername);
         this.kleidungsstueckKatalog.erstelleKleidungsstueckFuerBenutzer(k3, benutzername);
-        List<KleidungsstueckOutputDTO> testKleidungsstuecke;
         List<Kleidungsstueck> kleidungsstuecke = kleidungsstueckKatalog
                 .gebeAlleKleidungsstueckeVomBenutzer(new KleidungsstueckFilter(), benutzername);
-        testKleidungsstuecke = kleidungsstuecke.stream().map(kleidungsstueck -> kDtoKonverter.konvert(kleidungsstueck))
-                .toList();
-        OutfitInputDTO o1 = new OutfitInputDTO(benutzername, Arrays.asList("Sommer"),
+        OutfitInputDTO o1 = new OutfitInputDTO("Tolles Outfit", Arrays.asList("Sommer"),
                 Arrays.asList(kleidungsstuecke.get(1).getKleidungsId(), kleidungsstuecke.get(2).getKleidungsId()),
                 false);
-        OutfitInputDTO o2 = new OutfitInputDTO(benutzername, Arrays.asList("Winter"),
+        OutfitInputDTO o2 = new OutfitInputDTO("Tolles Outfit2", Arrays.asList("Winter"),
                 Arrays.asList(kleidungsstuecke.get(0).getKleidungsId(), kleidungsstuecke.get(2).getKleidungsId()),
                 false);
 
@@ -97,7 +93,7 @@ class OutfitRestRessourceTest {
     }
 
     @Test
-    void getAlleOutfits() {
+    void testGetAlleOutfits() {
         String response = given()
                 .auth()
                 .oauth2(this.service.gebeAccessToken(benutzername, passwort))
@@ -110,7 +106,8 @@ class OutfitRestRessourceTest {
 
         List<OutfitOutputDTO> erhalteneOutfits = new ArrayList<>();
         try {
-            erhalteneOutfits = objectMapper.readValue(response,new TypeReference<List<OutfitOutputDTO>>() {});
+            erhalteneOutfits = objectMapper.readValue(response, new TypeReference<List<OutfitOutputDTO>>() {
+            });
         } catch (Exception ex) {
             Assert.assertTrue(false);
         }
@@ -131,28 +128,32 @@ class OutfitRestRessourceTest {
     }
 
     @Test
-
-    void erstelleOutfit(){
+    void testErstelleOutfit() {
         OutfitInputDTO dto = new OutfitInputDTO("test", new ArrayList<String>(), new ArrayList<Long>(), false);
         given()
                 .auth()
-                .oauth2(this.service.gebeAccessToken("testbenutzer", "test"))
+                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
                 .body(dto)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .when()
-                .post()
-                .then()
-                .statusCode(201);
+                .post();
+        OutfitFilter filter = new OutfitFilter();
+        filter.name = "test";
+        List<Outfit> outfits = this.outfitKatalog.gebeAlleOutfitsVomBenutzer(filter, benutzername);
+        Assert.assertTrue(outfits.size() == 1);
+
     }
 
     @Test
-    void loescheAlleOutfits() {
+    void testLoescheAlleOutfits() {
         given()
                 .auth()
-                .oauth2(this.service.gebeAccessToken("testbenutzer", "test"))
+                .oauth2(this.service.gebeAccessToken(benutzername, passwort))
                 .when()
                 .delete()
-                .then()
-                .statusCode(200);
+                .then();
+
+        List<Outfit> outfits = this.outfitKatalog.gebeAlleOutfitsVomBenutzer(new OutfitFilter(), benutzername);
+        Assert.assertTrue(outfits.size() == 0);
     }
 }
